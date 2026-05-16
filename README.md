@@ -43,6 +43,14 @@ Publish a self-contained executable folder:
 dotnet publish .\src\Wisp2Win\Wisp2Win.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
+Build the macOS prototype on macOS 13+:
+
+```bash
+./macos/package_app.sh
+```
+
+The macOS bundle is designed to include its own Whisper runtime under `Contents/Resources/whisper` so end users install only one app.
+
 ## Installer
 
 The `installer/wisp2win.iss` script is intended for Inno Setup. Build the app first, then compile the installer script on Windows.

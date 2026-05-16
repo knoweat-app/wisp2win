@@ -40,10 +40,33 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.2.3 --repo knoweat-app/wisp2win `
-            || gh release create v0.2.3 --repo knoweat-app/wisp2win --title "Wisp2Win v0.2.3" --notes "Polish recording overlay with fade animations and elapsed time."
+          gh release view v0.3.0 --repo knoweat-app/wisp2win `
+            || gh release create v0.3.0 --repo knoweat-app/wisp2win --title "Wisp2Win v0.3.0" --notes "Add initial native macOS app scaffold and shared release packaging."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.2.3 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.3.0 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build app bundle
+        run: ./macos/package_app.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wisp2Mac
+          path: macos/output/Wisp2Mac-v0.3.0-macos.zip
+      - name: Ensure release exists
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v0.3.0 --repo knoweat-app/wisp2win \
+            || gh release create v0.3.0 --repo knoweat-app/wisp2win --title "Wisp2Win v0.3.0" --notes "Add initial native macOS app scaffold and shared release packaging."
+      - name: Upload macOS app to release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload v0.3.0 macos/output/Wisp2Mac-v0.3.0-macos.zip --repo knoweat-app/wisp2win --clobber

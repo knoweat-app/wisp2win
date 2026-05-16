@@ -128,6 +128,12 @@ Required behavior:
 - Detect hotkey conflicts.
 - Store selected hotkey in settings.
 
+macOS-specific constraints:
+
+- Avoid default shortcuts that collide with Spotlight, input sources, Mission Control, screenshot tools, or app menu shortcuts.
+- The first build uses `Ctrl+Shift+Space` because it is close to the Windows workflow and usually less overloaded than `Cmd+Space` or `Ctrl+Space`.
+- A Shortcuts.app integration should be added as a separate entry point later, so users can trigger dictation from Apple Shortcuts without replacing the native global hotkey.
+
 ## Active App Tracking
 
 Use `NSWorkspace.shared.frontmostApplication` before recording starts.
@@ -196,6 +202,7 @@ First build:
 
 - `.app` bundle
 - zipped artifact from GitHub Actions
+- `whisper-cli` must be bundled under `Contents/Resources/whisper/whisper-cli`; users must not install Homebrew, Python, or a separate Whisper binary.
 
 Production build:
 

@@ -7,3 +7,4 @@ obj/
 publish/
 installer/output/
 docs/*.log
+macos/output/
