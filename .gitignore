@@ -6,3 +6,4 @@ obj/
 *.nupkg
 publish/
 installer/output/
+docs/*.log

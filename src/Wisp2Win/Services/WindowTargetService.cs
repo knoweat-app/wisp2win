@@ -10,6 +10,7 @@ public sealed class WindowTargetService : IDisposable
     private readonly int _currentProcessId = Environment.ProcessId;
     private readonly System.Threading.Timer _timer;
     private IntPtr _lastExternalWindow = IntPtr.Zero;
+    private IntPtr _lastLoggedWindow = IntPtr.Zero;
 
     public WindowTargetService()
     {
@@ -22,7 +23,11 @@ public sealed class WindowTargetService : IDisposable
         if (IsUsableTarget(foreground))
         {
             _lastExternalWindow = foreground;
-            AppLog.Info("target", $"Captured {DescribeWindow(_lastExternalWindow)}");
+            if (_lastLoggedWindow != _lastExternalWindow)
+            {
+                _lastLoggedWindow = _lastExternalWindow;
+                AppLog.Info("target", $"Captured {DescribeWindow(_lastExternalWindow)}");
+            }
         }
     }
 

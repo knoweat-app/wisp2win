@@ -41,14 +41,16 @@ public sealed class PasteService
 
     private static bool SendCtrlV()
     {
-        INPUT[] inputs =
+        Input[] inputs =
         [
             KeyDown(VirtualKey.Control),
             KeyDown(VirtualKey.V),
             KeyUp(VirtualKey.V),
             KeyUp(VirtualKey.Control)
         ];
-        var sent = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<INPUT>());
+        var inputSize = Marshal.SizeOf<Input>();
+        AppLog.Info("paste", $"SendInput cbSize={inputSize}");
+        var sent = SendInput((uint)inputs.Length, inputs, inputSize);
         if (sent != inputs.Length)
         {
             AppLog.Error("paste", $"SendInput sent {sent}/{inputs.Length}, win32={Marshal.GetLastWin32Error()}");
@@ -57,20 +59,20 @@ public sealed class PasteService
         return sent == inputs.Length;
     }
 
-    private static INPUT KeyDown(VirtualKey key) => new()
+    private static Input KeyDown(VirtualKey key) => new()
     {
         type = 1,
-        U = new InputUnion { ki = new KEYBDINPUT { wVk = (ushort)key } }
+        ki = new KeyboardInput { wVk = (ushort)key }
     };
 
-    private static INPUT KeyUp(VirtualKey key) => new()
+    private static Input KeyUp(VirtualKey key) => new()
     {
         type = 1,
-        U = new InputUnion { ki = new KEYBDINPUT { wVk = (ushort)key, dwFlags = 0x0002 } }
+        ki = new KeyboardInput { wVk = (ushort)key, dwFlags = 0x0002 }
     };
 
     [DllImport("user32.dll", SetLastError = true)]
-    private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+    private static extern uint SendInput(uint nInputs, Input[] pInputs, int cbSize);
 
     private enum VirtualKey : ushort
     {
@@ -78,21 +80,17 @@ public sealed class PasteService
         V = 0x56
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct INPUT
+    [StructLayout(LayoutKind.Explicit, Size = 40)]
+    private struct Input
     {
+        [FieldOffset(0)]
         public int type;
-        public InputUnion U;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    private struct InputUnion
-    {
-        [FieldOffset(0)] public KEYBDINPUT ki;
+        [FieldOffset(8)]
+        public KeyboardInput ki;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct KEYBDINPUT
+    private struct KeyboardInput
     {
         public ushort wVk;
         public ushort wScan;

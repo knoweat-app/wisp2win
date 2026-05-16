@@ -40,10 +40,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.1.4 --repo knoweat-app/wisp2win `
-            || gh release create v0.1.4 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.4" --notes "Diagnostic release: file logging for hotkey, target-window activation, transcription, and paste."
+          gh release view v0.1.5 --repo knoweat-app/wisp2win `
+            || gh release create v0.1.5 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.5" --notes "Fix SendInput paste interop on win-x64 and reduce diagnostic log noise."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.1.4 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.1.5 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
