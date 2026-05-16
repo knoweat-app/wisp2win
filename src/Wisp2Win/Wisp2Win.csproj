@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Wisp2Win</AssemblyName>
     <RootNamespace>Wisp2Win</RootNamespace>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>

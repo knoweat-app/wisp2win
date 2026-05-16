@@ -10,7 +10,7 @@
         ShowActivated="False"
         ShowInTaskbar="False"
         Topmost="True"
-        Opacity="0.96">
+        Opacity="0">
     <Window.Resources>
         <Storyboard x:Key="PulseStoryboard" RepeatBehavior="Forever">
             <DoubleAnimation Storyboard.TargetName="PulseScale"
@@ -31,6 +31,16 @@
                              To="0.12"
                              Duration="0:0:1.15"
                              AutoReverse="True" />
+        </Storyboard>
+        <Storyboard x:Key="FadeInStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             To="0.96"
+                             Duration="0:0:0.18" />
+        </Storyboard>
+        <Storyboard x:Key="FadeOutStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             To="0"
+                             Duration="0:0:0.20" />
         </Storyboard>
     </Window.Resources>
 
@@ -80,9 +90,11 @@
                            FontSize="15"
                            FontWeight="SemiBold"
                            Foreground="#0F172A" />
-                <TextBlock Text="Wisp2Win"
+                <TextBlock x:Name="ElapsedText"
+                           Text="00:00"
                            Margin="0,1,0,0"
-                           FontSize="11"
+                           FontSize="12"
+                           FontWeight="Medium"
                            Foreground="#64748B" />
             </StackPanel>
         </DockPanel>
