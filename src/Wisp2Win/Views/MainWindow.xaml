@@ -50,6 +50,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Model" Foreground="{StaticResource MutedTextBrush}" />
@@ -82,7 +83,15 @@
                           IsChecked="{Binding TranslateToEnglish}"
                           Content="Translate to English" />
 
-                <StackPanel Grid.Row="3" Grid.ColumnSpan="2">
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Hotkey" Foreground="{StaticResource MutedTextBrush}" />
+                <ComboBox Grid.Row="4"
+                          Grid.Column="0"
+                          Margin="0,6,12,0"
+                          ItemsSource="{Binding Hotkeys}"
+                          SelectedItem="{Binding SelectedHotkey}"
+                          DisplayMemberPath="DisplayName" />
+
+                <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,0">
                     <DockPanel>
                         <TextBlock Text="Model download" Foreground="{StaticResource MutedTextBrush}" />
                         <Button DockPanel.Dock="Right"
@@ -107,7 +116,7 @@
                 Background="#EFF6FF"
                 BorderBrush="#BFDBFE"
                 BorderThickness="1">
-            <TextBlock Text="{Binding HotkeyStatus, StringFormat=Hotkey: \\ key. {0}}"
+            <TextBlock Text="{Binding HotkeyStatusText}"
                        Foreground="#1D4ED8" />
         </Border>
 

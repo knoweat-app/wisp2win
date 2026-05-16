@@ -19,6 +19,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public event EventHandler? ToggleRequested;
     public event EventHandler? DownloadModelRequested;
     public event EventHandler? ShowWindowRequested;
+    public event EventHandler<HotkeyChangeRequest>? HotkeyChangeRequested;
 
     public MainViewModel(SettingsService settings, ModelManager modelManager)
     {
@@ -32,6 +33,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ModelManager ModelManager { get; }
 
     public IReadOnlyList<ModelProfile> Models => ModelProfile.All;
+
+    public IReadOnlyList<HotkeyOption> Hotkeys => HotkeyOption.All;
 
     public AppSettings Settings => _settings.Current;
 
@@ -73,8 +76,18 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string HotkeyStatus
     {
         get => _hotkeyStatus;
-        set => Set(ref _hotkeyStatus, value);
+        set
+        {
+            if (Set(ref _hotkeyStatus, value))
+            {
+                OnPropertyChanged(nameof(HotkeyStatusText));
+            }
+        }
     }
+
+    public string HotkeyDisplay => HotkeyOption.ByValue(Settings.Hotkey).DisplayName;
+
+    public string HotkeyStatusText => $"Hotkey: {HotkeyDisplay}. {HotkeyStatus}";
 
     public string ToggleText => State == DictationState.Recording ? "Stop and insert" : "Start dictation";
 
@@ -93,6 +106,33 @@ public sealed class MainViewModel : INotifyPropertyChanged
             Settings.ModelId = value.Id;
             _settings.Save();
             OnPropertyChanged();
+        }
+    }
+
+    public HotkeyOption SelectedHotkey
+    {
+        get => HotkeyOption.ByValue(Settings.Hotkey);
+        set
+        {
+            if (Settings.Hotkey == value.Value)
+            {
+                return;
+            }
+
+            var request = new HotkeyChangeRequest(value.Value);
+            HotkeyChangeRequested?.Invoke(this, request);
+            if (!request.Accepted)
+            {
+                HotkeyStatus = "Hotkey is already in use";
+                OnPropertyChanged();
+                return;
+            }
+
+            Settings.Hotkey = value.Value;
+            _settings.Save();
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HotkeyDisplay));
+            OnPropertyChanged(nameof(HotkeyStatusText));
         }
     }
 
@@ -158,6 +198,17 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+}
+
+public sealed class HotkeyChangeRequest
+{
+    public HotkeyChangeRequest(string hotkey)
+    {
+        Hotkey = hotkey;
+    }
+
+    public string Hotkey { get; }
+    public bool Accepted { get; set; }
 }
 
 public sealed class RelayCommand : ICommand

@@ -17,11 +17,15 @@ This is an initial Windows scaffold:
 
 - WPF desktop app targeting `net8.0-windows`.
 - Tray icon with quick actions.
-- Global hotkey via Win32 `RegisterHotKey`.
+- Configurable global hotkey via Win32 `RegisterHotKey`.
 - Microphone recording via NAudio.
 - Local transcription via `Whisper.net` and bundled `Whisper.net.Runtime`.
 - Model auto-download from the official `whisper.cpp` Hugging Face model bucket.
 - Clipboard insertion via Win32 `SendInput`.
+
+## Screenshot
+
+![Wisp2Win main window](docs/screenshots/Снимок%20экрана%202026-05-16%20143535.png)
 
 ## Build
 
@@ -57,7 +61,6 @@ The default model is `base`, which is a practical starting point for dictation. 
 
 ## Roadmap
 
-- Hotkey editor in the settings window.
 - Startup with Windows option.
 - Real-time recording level HUD.
 - Model checksum verification.

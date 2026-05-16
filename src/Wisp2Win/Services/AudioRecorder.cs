@@ -6,6 +6,7 @@ namespace Wisp2Win.Services;
 
 public sealed class AudioRecorder : IDisposable
 {
+    private readonly object _syncRoot = new();
     private WaveInEvent? _waveIn;
     private WaveFileWriter? _writer;
     private string? _currentPath;
@@ -30,14 +31,8 @@ public sealed class AudioRecorder : IDisposable
         };
 
         _writer = new WaveFileWriter(_currentPath, _waveIn.WaveFormat);
-        _waveIn.DataAvailable += (_, args) => _writer?.Write(args.Buffer, 0, args.BytesRecorded);
-        _waveIn.RecordingStopped += (_, _) =>
-        {
-            _writer?.Dispose();
-            _writer = null;
-            _waveIn?.Dispose();
-            _waveIn = null;
-        };
+        _waveIn.DataAvailable += OnDataAvailable;
+        _waveIn.RecordingStopped += (_, _) => Cleanup();
         _waveIn.StartRecording();
         return _currentPath;
     }
@@ -52,13 +47,32 @@ public sealed class AudioRecorder : IDisposable
         var path = _currentPath;
         _currentPath = null;
         _waveIn.StopRecording();
+        Cleanup();
         return path;
     }
 
     public void Dispose()
     {
         _waveIn?.StopRecording();
-        _waveIn?.Dispose();
-        _writer?.Dispose();
+        Cleanup();
+    }
+
+    private void OnDataAvailable(object? sender, WaveInEventArgs args)
+    {
+        lock (_syncRoot)
+        {
+            _writer?.Write(args.Buffer, 0, args.BytesRecorded);
+        }
+    }
+
+    private void Cleanup()
+    {
+        lock (_syncRoot)
+        {
+            _writer?.Dispose();
+            _writer = null;
+            _waveIn?.Dispose();
+            _waveIn = null;
+        }
     }
 }

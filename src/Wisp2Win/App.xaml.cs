@@ -36,6 +36,11 @@ public partial class App : System.Windows.Application
         viewModel.ToggleRequested += async (_, _) => await _coordinator.ToggleAsync();
         viewModel.DownloadModelRequested += async (_, _) => await _coordinator.EnsureModelAsync();
         viewModel.ShowWindowRequested += (_, _) => _mainWindow.ShowAndActivate();
+        viewModel.HotkeyChangeRequested += (_, request) =>
+        {
+            request.Accepted = _hotkeyService.Register(request.Hotkey);
+            viewModel.HotkeyStatus = request.Accepted ? "Active" : "Hotkey is already in use";
+        };
 
         _mainWindow.Show();
         await _coordinator.EnsureModelAsync();
