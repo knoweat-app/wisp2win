@@ -128,7 +128,7 @@ final class AppState: ObservableObject {
             return .paste
         }
 
-        if targetApp.isTermius || targetApp.isTerminalLike {
+        if targetApp.isTerminalLike {
             return .typeText
         }
 
