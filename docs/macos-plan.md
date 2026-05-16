@@ -212,6 +212,7 @@ Production build:
 GitHub Actions:
 
 - add a macOS job beside the Windows job;
+- build `whisper.cpp` in CI from the pinned `v1.7.6` tag;
 - upload `Wisp2Mac.app.zip`;
 - attach it to the same GitHub release tag.
 

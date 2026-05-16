@@ -8,3 +8,5 @@ publish/
 installer/output/
 docs/*.log
 macos/output/
+macos/.whisper-build/
+macos/whisper/

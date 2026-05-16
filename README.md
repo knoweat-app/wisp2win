@@ -46,10 +46,11 @@ dotnet publish .\src\Wisp2Win\Wisp2Win.csproj -c Release -r win-x64 --self-conta
 Build the macOS prototype on macOS 13+:
 
 ```bash
+./macos/build_whisper.sh
 ./macos/package_app.sh
 ```
 
-The macOS bundle is designed to include its own Whisper runtime under `Contents/Resources/whisper` so end users install only one app.
+The macOS bundle includes its own Whisper runtime under `Contents/Resources/whisper` so end users install only one app. The build script currently pins `whisper.cpp` to `v1.7.6` for reproducible CI builds.
 
 ## Installer
 
