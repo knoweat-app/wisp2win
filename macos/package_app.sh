@@ -81,6 +81,8 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
   <string>Wisp2Mac записывает голос для локальной диктовки.</string>
   <key>NSAppleEventsUsageDescription</key>
   <string>Wisp2Mac возвращает фокус в активное приложение после диктовки.</string>
+  <key>NSInputMonitoringUsageDescription</key>
+  <string>Wisp2Mac отслеживает нажатие горячей клавиши для запуска диктовки.</string>
 </dict>
 </plist>
 PLIST

@@ -5,6 +5,10 @@ enum AppLog {
         write("INFO", area, message)
     }
 
+    static func warn(_ area: String, _ message: String) {
+        write("WARN", area, message)
+    }
+
     static func error(_ area: String, _ error: Error) {
         write("ERROR", area, error.localizedDescription)
     }
