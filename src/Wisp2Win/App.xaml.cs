@@ -5,7 +5,7 @@ using Wisp2Win.Views;
 
 namespace Wisp2Win;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     private NotifyIconService? _notifyIcon;
     private MainWindow? _mainWindow;
