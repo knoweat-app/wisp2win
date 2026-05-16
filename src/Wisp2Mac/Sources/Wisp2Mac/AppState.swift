@@ -85,7 +85,7 @@ final class AppState: ObservableObject {
         status = "Распознавание"
 
         do {
-            guard let recordingURL else {
+            guard recordingURL != nil else {
                 throw WispError("Нет активной записи")
             }
 
