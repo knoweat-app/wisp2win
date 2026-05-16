@@ -24,3 +24,11 @@ jobs:
         with:
           name: Wisp2Win-win-x64
           path: publish
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+      - name: Build installer
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\wisp2win.iss'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wisp2Win-Setup
+          path: installer/output/*.exe
