@@ -6,5 +6,6 @@
         <SolidColorBrush x:Key="SurfaceBrush" Color="#F8FAFC" />
         <SolidColorBrush x:Key="TextBrush" Color="#0F172A" />
         <SolidColorBrush x:Key="MutedTextBrush" Color="#64748B" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
     </Application.Resources>
 </Application>

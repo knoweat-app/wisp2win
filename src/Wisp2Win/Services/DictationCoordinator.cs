@@ -85,6 +85,7 @@ public sealed class DictationCoordinator : IDisposable
                 new Progress<double>(value => _viewModel.DownloadProgress = value));
             _viewModel.State = DictationState.Idle;
             _viewModel.Status = "Готово";
+            _viewModel.RefreshModelInstalled();
         }
         catch (Exception ex)
         {

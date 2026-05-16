@@ -106,18 +106,47 @@
 
                 <StackPanel Grid.Row="4" Grid.Column="1" Grid.RowSpan="3" Margin="12,0,0,0">
                     <DockPanel>
-                        <TextBlock Text="Загрузка модели" Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="Модель" Foreground="{StaticResource MutedTextBrush}" />
+
+                        <!--  Installed badge  -->
+                        <StackPanel DockPanel.Dock="Right"
+                                    Orientation="Horizontal"
+                                    Visibility="{Binding IsModelInstalled, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="✓ Установлена"
+                                       Foreground="#16A34A"
+                                       FontWeight="Medium"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!--  Download button (hidden when installed or downloading)  -->
                         <Button DockPanel.Dock="Right"
                                 Width="96"
                                 Height="28"
                                 Command="{Binding DownloadModelCommand}"
-                                Content="Скачать" />
+                                Content="Скачать">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsModelInstalled}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </DockPanel>
+
+                    <!--  Progress bar: only while downloading  -->
                     <ProgressBar Height="8"
                                  Margin="0,8,0,0"
                                  Minimum="0"
                                  Maximum="1"
-                                 Value="{Binding DownloadProgress}" />
+                                 Value="{Binding DownloadProgress}"
+                                 Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibility}}" />
+
                     <CheckBox Margin="0,16,0,0"
                               IsChecked="{Binding ShowRecordingOverlay}"
                               Content="Показывать индикатор записи" />

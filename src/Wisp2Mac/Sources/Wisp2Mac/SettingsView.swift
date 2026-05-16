@@ -68,12 +68,29 @@ struct SettingsView: View {
                     .labelsHidden()
                 }
 
-                field("Модель: скачать") {
-                    HStack {
-                        ProgressView(value: state.downloadProgress)
-                        Button("Скачать") {
-                            Task { await state.ensureModel() }
+                field("Модель") {
+                    if state.isBusy && state.downloadProgress < 1 {
+                        HStack(spacing: 8) {
+                            ProgressView(value: state.downloadProgress)
+                            Text("\(Int(state.downloadProgress * 100))%")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 32)
                         }
+                    } else if state.isModelInstalled {
+                        HStack(spacing: 6) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("Установлена")
+                                .foregroundStyle(.green)
+                            Spacer()
+                            Button("Обновить") { Task { await state.ensureModel() } }
+                                .controlSize(.small)
+                                .buttonStyle(.borderless)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Button("Скачать") { Task { await state.ensureModel() } }
                     }
                 }
             }

@@ -9,6 +9,7 @@ final class AppState: ObservableObject {
     @Published var isBusy = false
     @Published var downloadProgress = 0.0
     @Published var lastTranscript = ""
+    @Published var isModelInstalled = false
 
     let modelManager = ModelManager()
     let overlay = RecordingOverlayController()
@@ -24,10 +25,16 @@ final class AppState: ObservableObject {
 
     init() {
         settings = settingsStore.load()
+        refreshModelInstalled()
     }
 
     func saveSettings() {
         settingsStore.save(settings)
+        refreshModelInstalled()
+    }
+
+    func refreshModelInstalled() {
+        isModelInstalled = modelManager.isInstalled(ModelProfile.byId(settings.modelId))
     }
 
     func ensureModel() async {
@@ -103,6 +110,7 @@ final class AppState: ObservableObject {
                 text = postProcessor.polish(text, language: settings.language)
             }
 
+            refreshModelInstalled()
             lastTranscript = text
             if settings.pasteAfterTranscription && !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 status = "Вставка"

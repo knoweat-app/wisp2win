@@ -98,6 +98,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public bool IsBusy => State is DictationState.DownloadingModel or DictationState.Transcribing or DictationState.Inserting;
 
+    public bool IsDownloading => State == DictationState.DownloadingModel;
+
+    public bool IsModelInstalled => ModelManager.IsInstalled(SelectedModel);
+
     public ModelProfile SelectedModel
     {
         get => ModelProfile.ById(Settings.ModelId);
@@ -111,8 +115,11 @@ public sealed class MainViewModel : INotifyPropertyChanged
             Settings.ModelId = value.Id;
             _settings.Save();
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsModelInstalled));
         }
     }
+
+    public void RefreshModelInstalled() => OnPropertyChanged(nameof(IsModelInstalled));
 
     public HotkeyOption SelectedHotkey
     {
