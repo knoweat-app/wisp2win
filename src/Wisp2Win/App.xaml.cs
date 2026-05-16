@@ -9,6 +9,7 @@ public partial class App : System.Windows.Application
 {
     private NotifyIconService? _notifyIcon;
     private MainWindow? _mainWindow;
+    private RecordingOverlayWindow? _overlayWindow;
     private DictationCoordinator? _coordinator;
     private HotkeyService? _hotkeyService;
 
@@ -43,7 +44,7 @@ public partial class App : System.Windows.Application
 
         _hotkeyService.HotkeyPressed += async (_, _) => await _coordinator.ToggleAsync();
         var registered = _hotkeyService.Register(settings.Current.Hotkey);
-        viewModel.HotkeyStatus = registered ? "Active" : "Hotkey is already in use";
+        viewModel.HotkeyStatus = registered ? "Активна" : "Клавиша уже занята";
 
         viewModel.ToggleRequested += async (_, _) => await _coordinator.ToggleAsync();
         viewModel.DownloadModelRequested += async (_, _) => await _coordinator.EnsureModelAsync();
@@ -51,9 +52,10 @@ public partial class App : System.Windows.Application
         viewModel.HotkeyChangeRequested += (_, request) =>
         {
             request.Accepted = _hotkeyService.Register(request.Hotkey);
-            viewModel.HotkeyStatus = request.Accepted ? "Active" : "Hotkey is already in use";
+            viewModel.HotkeyStatus = request.Accepted ? "Активна" : "Клавиша уже занята";
         };
 
+        _overlayWindow = new RecordingOverlayWindow(viewModel);
         _mainWindow.Show();
         await _coordinator.EnsureModelAsync();
     }
@@ -63,6 +65,7 @@ public partial class App : System.Windows.Application
         _coordinator?.Dispose();
         _hotkeyService?.Dispose();
         _notifyIcon?.Dispose();
+        _overlayWindow?.Close();
         base.OnExit(e);
     }
 }

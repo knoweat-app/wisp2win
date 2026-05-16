@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing;
 using Wisp2Win.Views;
 using Forms = System.Windows.Forms;
@@ -12,7 +13,7 @@ public sealed class NotifyIconService : IDisposable
     {
         _notifyIcon = new Forms.NotifyIcon
         {
-            Icon = SystemIcons.Application,
+            Icon = LoadIcon(),
             Text = "Wisp2Win",
             Visible = true,
             ContextMenuStrip = BuildMenu(window, coordinator)
@@ -23,11 +24,26 @@ public sealed class NotifyIconService : IDisposable
     private static Forms.ContextMenuStrip BuildMenu(MainWindow window, DictationCoordinator coordinator)
     {
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Open", null, (_, _) => window.ShowAndActivate());
-        menu.Items.Add("Toggle dictation", null, async (_, _) => await coordinator.ToggleAsync());
+        menu.Items.Add("Открыть", null, (_, _) => window.ShowAndActivate());
+        menu.Items.Add("Диктовка", null, async (_, _) => await coordinator.ToggleAsync());
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("Exit", null, (_, _) => System.Windows.Application.Current.Shutdown());
+        menu.Items.Add("Выход", null, (_, _) => System.Windows.Application.Current.Shutdown());
         return menu;
+    }
+
+    private static Icon LoadIcon()
+    {
+        try
+        {
+            var path = Process.GetCurrentProcess().MainModule?.FileName;
+            return string.IsNullOrWhiteSpace(path)
+                ? SystemIcons.Application
+                : Icon.ExtractAssociatedIcon(path) ?? SystemIcons.Application;
+        }
+        catch
+        {
+            return SystemIcons.Application;
+        }
     }
 
     public void Dispose()

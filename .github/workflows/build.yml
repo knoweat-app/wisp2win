@@ -40,10 +40,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.2.1 --repo knoweat-app/wisp2win `
-            || gh release create v0.2.1 --repo knoweat-app/wisp2win --title "Wisp2Win v0.2.1" --notes "Add offline transcript polishing and document the macOS app plan."
+          gh release view v0.2.2 --repo knoweat-app/wisp2win `
+            || gh release create v0.2.2 --repo knoweat-app/wisp2win --title "Wisp2Win v0.2.2" --notes "Russian UI, microphone app icon, and optional recording overlay."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.2.1 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.2.2 installer/output/*.exe --repo knoweat-app/wisp2win --clobber

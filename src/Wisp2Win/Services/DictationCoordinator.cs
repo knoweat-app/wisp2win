@@ -72,19 +72,19 @@ public sealed class DictationCoordinator : IDisposable
         if (_viewModel.ModelManager.IsInstalled(profile))
         {
             _viewModel.DownloadProgress = 1;
-            _viewModel.Status = "Ready";
+            _viewModel.Status = "Готово";
             return;
         }
 
         _viewModel.State = DictationState.DownloadingModel;
-        _viewModel.Status = $"Downloading {profile.DisplayName} model";
+        _viewModel.Status = $"Загрузка модели {profile.DisplayName}";
         try
         {
             await _viewModel.ModelManager.EnsureInstalledAsync(
                 profile,
                 new Progress<double>(value => _viewModel.DownloadProgress = value));
             _viewModel.State = DictationState.Idle;
-            _viewModel.Status = "Ready";
+            _viewModel.Status = "Готово";
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public sealed class DictationCoordinator : IDisposable
         _windowTargetService.CaptureForegroundWindow();
         _recordingPath = _recorder.Start();
         _viewModel.State = DictationState.Recording;
-        _viewModel.Status = "Recording";
+        _viewModel.Status = "Идет запись";
     }
 
     private async Task StopAndTranscribeAsync()
@@ -107,7 +107,7 @@ public sealed class DictationCoordinator : IDisposable
         var path = _recorder.Stop();
         _recordingPath = null;
         _viewModel.State = DictationState.Transcribing;
-        _viewModel.Status = "Transcribing";
+        _viewModel.Status = "Распознавание";
 
         try
         {
@@ -129,7 +129,7 @@ public sealed class DictationCoordinator : IDisposable
             if (!string.IsNullOrWhiteSpace(text) && _settings.Current.PasteAfterTranscription)
             {
                 _viewModel.State = DictationState.Inserting;
-                _viewModel.Status = "Inserting";
+                _viewModel.Status = "Вставка";
                 AppLog.Info("paste", $"Before hide foreground={_windowTargetService.DescribeForegroundWindow()}");
                 _beforePaste?.Invoke();
                 AppLog.Info("paste", $"After hide foreground={_windowTargetService.DescribeForegroundWindow()}");
@@ -140,7 +140,7 @@ public sealed class DictationCoordinator : IDisposable
             }
 
             _viewModel.State = DictationState.Idle;
-            _viewModel.Status = string.IsNullOrWhiteSpace(text) ? "No speech detected" : "Ready";
+            _viewModel.Status = string.IsNullOrWhiteSpace(text) ? "Речь не обнаружена" : "Готово";
         }
         catch (Exception ex)
         {

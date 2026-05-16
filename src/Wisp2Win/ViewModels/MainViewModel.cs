@@ -10,7 +10,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 {
     private readonly SettingsService _settings;
     private DictationState _state;
-    private string _status = "Starting";
+    private string _status = "Запуск";
     private string _lastTranscript = "";
     private double _downloadProgress;
     private string _hotkeyStatus = "";
@@ -92,9 +92,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public string HotkeyDisplay => HotkeyOption.ByValue(Settings.Hotkey).DisplayName;
 
-    public string HotkeyStatusText => $"Hotkey: {HotkeyDisplay}. {HotkeyStatus}";
+    public string HotkeyStatusText => $"Горячая клавиша: {HotkeyDisplay}. {HotkeyStatus}";
 
-    public string ToggleText => State == DictationState.Recording ? "Stop and insert" : "Start dictation";
+    public string ToggleText => State == DictationState.Recording ? "Остановить и вставить" : "Начать диктовку";
 
     public bool IsBusy => State is DictationState.DownloadingModel or DictationState.Transcribing or DictationState.Inserting;
 
@@ -202,6 +202,22 @@ public sealed class MainViewModel : INotifyPropertyChanged
             }
 
             Settings.PolishTranscript = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowRecordingOverlay
+    {
+        get => Settings.ShowRecordingOverlay;
+        set
+        {
+            if (Settings.ShowRecordingOverlay == value)
+            {
+                return;
+            }
+
+            Settings.ShowRecordingOverlay = value;
             _settings.Save();
             OnPropertyChanged();
         }

@@ -4,10 +4,10 @@ public sealed record PasteShortcutOption(string Value, string DisplayName)
 {
     public static readonly IReadOnlyList<PasteShortcutOption> All =
     [
-        new("auto", "Auto"),
+        new("auto", "Авто"),
         new("ctrl-v", "Ctrl+V"),
         new("ctrl-shift-v", "Ctrl+Shift+V"),
-        new("type-text", "Type text")
+        new("type-text", "Печатать текст")
     ];
 
     public static PasteShortcutOption ByValue(string value) =>

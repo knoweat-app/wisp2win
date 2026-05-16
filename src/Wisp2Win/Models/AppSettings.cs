@@ -8,6 +8,7 @@ public sealed class AppSettings
     public string PasteShortcut { get; set; } = "auto";
     public bool PasteAfterTranscription { get; set; } = true;
     public bool PolishTranscript { get; set; } = true;
+    public bool ShowRecordingOverlay { get; set; } = true;
     public bool TranslateToEnglish { get; set; }
     public bool StartMinimized { get; set; }
 }
