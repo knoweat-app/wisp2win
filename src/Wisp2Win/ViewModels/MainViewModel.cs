@@ -38,6 +38,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public IReadOnlyList<HotkeyOption> Hotkeys => HotkeyOption.All;
 
+    public IReadOnlyList<PasteShortcutOption> PasteShortcuts => PasteShortcutOption.All;
+
     public AppSettings Settings => _settings.Current;
 
     public ICommand ToggleCommand { get; }
@@ -138,6 +140,22 @@ public sealed class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(HotkeyDisplay));
             OnPropertyChanged(nameof(HotkeyStatusText));
+        }
+    }
+
+    public PasteShortcutOption SelectedPasteShortcut
+    {
+        get => PasteShortcutOption.ByValue(Settings.PasteShortcut);
+        set
+        {
+            if (Settings.PasteShortcut == value.Value)
+            {
+                return;
+            }
+
+            Settings.PasteShortcut = value.Value;
+            _settings.Save();
+            OnPropertyChanged();
         }
     }
 

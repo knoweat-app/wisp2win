@@ -5,7 +5,11 @@ namespace Wisp2Win.Services;
 
 public sealed class PasteService
 {
-    public async Task PasteAsync(string text, Func<bool>? activateTarget = null, CancellationToken cancellationToken = default)
+    public async Task PasteAsync(
+        string text,
+        string shortcut,
+        Func<bool>? activateTarget = null,
+        CancellationToken cancellationToken = default)
     {
         System.Windows.IDataObject? previous = null;
         try
@@ -22,8 +26,8 @@ public sealed class PasteService
         var activated = activateTarget?.Invoke();
         AppLog.Info("paste", $"Activate target result={activated}");
         await Task.Delay(220, cancellationToken);
-        var sent = SendCtrlV();
-        AppLog.Info("paste", $"Send Ctrl+V result={sent}");
+        var sent = SendPasteShortcut(shortcut);
+        AppLog.Info("paste", $"Send {shortcut} result={sent}");
         await Task.Delay(700, cancellationToken);
 
         if (previous is not null)
@@ -39,15 +43,26 @@ public sealed class PasteService
         }
     }
 
-    private static bool SendCtrlV()
+    private static bool SendPasteShortcut(string shortcut)
     {
-        Input[] inputs =
-        [
-            KeyDown(VirtualKey.Control),
-            KeyDown(VirtualKey.V),
-            KeyUp(VirtualKey.V),
-            KeyUp(VirtualKey.Control)
-        ];
+        var useShift = string.Equals(shortcut, "ctrl-shift-v", StringComparison.OrdinalIgnoreCase);
+        Input[] inputs = useShift
+            ?
+            [
+                KeyDown(VirtualKey.Control),
+                KeyDown(VirtualKey.Shift),
+                KeyDown(VirtualKey.V),
+                KeyUp(VirtualKey.V),
+                KeyUp(VirtualKey.Shift),
+                KeyUp(VirtualKey.Control)
+            ]
+            :
+            [
+                KeyDown(VirtualKey.Control),
+                KeyDown(VirtualKey.V),
+                KeyUp(VirtualKey.V),
+                KeyUp(VirtualKey.Control)
+            ];
         var inputSize = Marshal.SizeOf<Input>();
         AppLog.Info("paste", $"SendInput cbSize={inputSize}");
         var sent = SendInput((uint)inputs.Length, inputs, inputSize);
@@ -77,6 +92,7 @@ public sealed class PasteService
     private enum VirtualKey : ushort
     {
         Control = 0x11,
+        Shift = 0x10,
         V = 0x56
     }
 

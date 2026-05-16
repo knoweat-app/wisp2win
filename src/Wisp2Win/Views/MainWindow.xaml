@@ -4,7 +4,7 @@
         xmlns:models="clr-namespace:Wisp2Win.Models"
         Title="Wisp2Win"
         Width="520"
-        Height="560"
+        Height="600"
         MinWidth="460"
         MinHeight="500"
         Background="{StaticResource SurfaceBrush}">
@@ -51,6 +51,8 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Model" Foreground="{StaticResource MutedTextBrush}" />
@@ -91,7 +93,15 @@
                           SelectedItem="{Binding SelectedHotkey}"
                           DisplayMemberPath="DisplayName" />
 
-                <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,0">
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Paste shortcut" Foreground="{StaticResource MutedTextBrush}" />
+                <ComboBox Grid.Row="6"
+                          Grid.Column="0"
+                          Margin="0,6,12,0"
+                          ItemsSource="{Binding PasteShortcuts}"
+                          SelectedItem="{Binding SelectedPasteShortcut}"
+                          DisplayMemberPath="DisplayName" />
+
+                <StackPanel Grid.Row="4" Grid.Column="1" Grid.RowSpan="3" Margin="12,0,0,0">
                     <DockPanel>
                         <TextBlock Text="Model download" Foreground="{StaticResource MutedTextBrush}" />
                         <Button DockPanel.Dock="Right"

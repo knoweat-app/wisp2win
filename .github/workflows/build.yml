@@ -40,10 +40,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.1.5 --repo knoweat-app/wisp2win `
-            || gh release create v0.1.5 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.5" --notes "Fix SendInput paste interop on win-x64 and reduce diagnostic log noise."
+          gh release view v0.1.6 --repo knoweat-app/wisp2win `
+            || gh release create v0.1.6 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.6" --notes "Add configurable paste shortcut with automatic Ctrl+Shift+V for Termius and terminal windows."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.1.5 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.1.6 installer/output/*.exe --repo knoweat-app/wisp2win --clobber

@@ -112,6 +112,10 @@ public sealed class WindowTargetService : IDisposable
 
     public string DescribeForegroundWindow() => DescribeWindow(GetForegroundWindow());
 
+    public string DescribeLastExternalWindow() => DescribeWindow(_lastExternalWindow);
+
+    public string LastExternalWindowTitle => GetWindowTitle(_lastExternalWindow);
+
     private static string DescribeWindow(IntPtr window)
     {
         if (window == IntPtr.Zero)

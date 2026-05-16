@@ -127,7 +127,10 @@ public sealed class DictationCoordinator : IDisposable
                 AppLog.Info("paste", $"Before hide foreground={_windowTargetService.DescribeForegroundWindow()}");
                 _beforePaste?.Invoke();
                 AppLog.Info("paste", $"After hide foreground={_windowTargetService.DescribeForegroundWindow()}");
-                await _pasteService.PasteAsync(text, _windowTargetService.ActivateLastExternalWindow);
+                await _pasteService.PasteAsync(
+                    text,
+                    ResolvePasteShortcut(),
+                    _windowTargetService.ActivateLastExternalWindow);
             }
 
             _viewModel.State = DictationState.Idle;
@@ -160,6 +163,30 @@ public sealed class DictationCoordinator : IDisposable
         {
             // Temp audio cleanup is best-effort.
         }
+    }
+
+    private string ResolvePasteShortcut()
+    {
+        var configured = _settings.Current.PasteShortcut;
+        if (!string.Equals(configured, "auto", StringComparison.OrdinalIgnoreCase))
+        {
+            return configured;
+        }
+
+        var title = _windowTargetService.LastExternalWindowTitle;
+        var shortcut = IsTerminalLike(title) ? "ctrl-shift-v" : "ctrl-v";
+        AppLog.Info("paste", $"Auto shortcut={shortcut}; target={_windowTargetService.DescribeLastExternalWindow()}");
+        return shortcut;
+    }
+
+    private static bool IsTerminalLike(string title)
+    {
+        return title.Contains("Termius", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("Windows Terminal", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("PowerShell", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("Command Prompt", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("cmd.exe", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("WSL", StringComparison.OrdinalIgnoreCase);
     }
 
     public void Dispose()
