@@ -8,12 +8,12 @@ namespace Wisp2Win.Services;
 public sealed class WindowTargetService : IDisposable
 {
     private readonly int _currentProcessId = Environment.ProcessId;
-    private readonly Timer _timer;
+    private readonly System.Threading.Timer _timer;
     private IntPtr _lastExternalWindow = IntPtr.Zero;
 
     public WindowTargetService()
     {
-        _timer = new Timer(_ => CaptureForegroundWindow(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(300));
+        _timer = new System.Threading.Timer(_ => CaptureForegroundWindow(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(300));
     }
 
     public void CaptureForegroundWindow()
