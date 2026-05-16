@@ -120,18 +120,7 @@ final class AppState: ObservableObject {
     }
 
     private func resolveInsertMethod() -> InsertMethod {
-        if settings.insertMethod != .auto {
-            return settings.insertMethod
-        }
-
-        guard let targetApp else {
-            return .paste
-        }
-
-        if targetApp.isTerminalLike {
-            return .typeText
-        }
-
+        guard settings.insertMethod == .auto else { return settings.insertMethod }
         return .paste
     }
 }
