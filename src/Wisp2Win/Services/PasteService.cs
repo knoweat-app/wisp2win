@@ -7,7 +7,7 @@ public sealed class PasteService
 {
     public async Task PasteAsync(string text, CancellationToken cancellationToken = default)
     {
-        IDataObject? previous = null;
+        System.Windows.IDataObject? previous = null;
         try
         {
             previous = System.Windows.Clipboard.GetDataObject();

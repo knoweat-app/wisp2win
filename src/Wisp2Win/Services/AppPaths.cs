@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+
 namespace Wisp2Win.Services;
 
 public static class AppPaths

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using Whisper.net;
 using Wisp2Win.Models;
