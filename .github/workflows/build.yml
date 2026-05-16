@@ -40,10 +40,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.1.2 --repo knoweat-app/wisp2win `
-            || gh release create v0.1.2 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.2" --notes "Bugfix release: paste into the previously active external window."
+          gh release view v0.1.3 --repo knoweat-app/wisp2win `
+            || gh release create v0.1.3 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.3" --notes "Bugfix release: stronger paste target activation and hotkey selection reset."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.1.2 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.1.3 installer/output/*.exe --repo knoweat-app/wisp2win --clobber

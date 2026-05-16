@@ -42,7 +42,46 @@ public sealed class WindowTargetService : IDisposable
             ShowWindow(_lastExternalWindow, ShowWindowRestore);
         }
 
-        return SetForegroundWindow(_lastExternalWindow);
+        ForceForegroundWindow(_lastExternalWindow);
+        return GetForegroundWindow() == _lastExternalWindow;
+    }
+
+    private static void ForceForegroundWindow(IntPtr window)
+    {
+        var currentThread = GetCurrentThreadId();
+        var foreground = GetForegroundWindow();
+        var foregroundThread = foreground == IntPtr.Zero ? 0 : GetWindowThreadProcessId(foreground, out _);
+        var targetThread = GetWindowThreadProcessId(window, out _);
+
+        if (foregroundThread != 0 && foregroundThread != currentThread)
+        {
+            AttachThreadInput(currentThread, foregroundThread, true);
+        }
+
+        if (targetThread != 0 && targetThread != currentThread)
+        {
+            AttachThreadInput(currentThread, targetThread, true);
+        }
+
+        try
+        {
+            BringWindowToTop(window);
+            SetForegroundWindow(window);
+            SetActiveWindow(window);
+            SetFocus(window);
+        }
+        finally
+        {
+            if (targetThread != 0 && targetThread != currentThread)
+            {
+                AttachThreadInput(currentThread, targetThread, false);
+            }
+
+            if (foregroundThread != 0 && foregroundThread != currentThread)
+            {
+                AttachThreadInput(currentThread, foregroundThread, false);
+            }
+        }
     }
 
     private bool IsUsableTarget(IntPtr window)
@@ -86,6 +125,21 @@ public sealed class WindowTargetService : IDisposable
 
     [DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool BringWindowToTop(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SetFocus(IntPtr hWnd);
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetCurrentThreadId();
+
+    [DllImport("user32.dll")]
+    private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool attach);
 
     [DllImport("user32.dll")]
     private static extern bool IsWindow(IntPtr hWnd);

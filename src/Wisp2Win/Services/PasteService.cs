@@ -5,7 +5,7 @@ namespace Wisp2Win.Services;
 
 public sealed class PasteService
 {
-    public async Task PasteAsync(string text, CancellationToken cancellationToken = default)
+    public async Task PasteAsync(string text, Func<bool>? activateTarget = null, CancellationToken cancellationToken = default)
     {
         System.Windows.IDataObject? previous = null;
         try
@@ -18,9 +18,10 @@ public sealed class PasteService
         }
 
         System.Windows.Clipboard.SetText(text);
-        await Task.Delay(80, cancellationToken);
+        activateTarget?.Invoke();
+        await Task.Delay(220, cancellationToken);
         SendCtrlV();
-        await Task.Delay(350, cancellationToken);
+        await Task.Delay(700, cancellationToken);
 
         if (previous is not null)
         {

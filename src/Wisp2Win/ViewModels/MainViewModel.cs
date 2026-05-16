@@ -124,7 +124,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (!request.Accepted)
             {
                 HotkeyStatus = "Hotkey is already in use";
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedHotkey));
+                OnPropertyChanged(nameof(HotkeyDisplay));
+                OnPropertyChanged(nameof(HotkeyStatusText));
                 return;
             }
 

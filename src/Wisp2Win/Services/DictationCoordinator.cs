@@ -11,6 +11,7 @@ public sealed class DictationCoordinator : IDisposable
     private readonly WhisperTranscriber _transcriber;
     private readonly PasteService _pasteService;
     private readonly WindowTargetService _windowTargetService;
+    private readonly Action? _beforePaste;
     private readonly MainViewModel _viewModel;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private string? _recordingPath;
@@ -21,6 +22,7 @@ public sealed class DictationCoordinator : IDisposable
         WhisperTranscriber transcriber,
         PasteService pasteService,
         WindowTargetService windowTargetService,
+        Action? beforePaste,
         MainViewModel viewModel)
     {
         _settings = settings;
@@ -28,6 +30,7 @@ public sealed class DictationCoordinator : IDisposable
         _transcriber = transcriber;
         _pasteService = pasteService;
         _windowTargetService = windowTargetService;
+        _beforePaste = beforePaste;
         _viewModel = viewModel;
     }
 
@@ -114,8 +117,8 @@ public sealed class DictationCoordinator : IDisposable
             {
                 _viewModel.State = DictationState.Inserting;
                 _viewModel.Status = "Inserting";
-                _windowTargetService.ActivateLastExternalWindow();
-                await _pasteService.PasteAsync(text);
+                _beforePaste?.Invoke();
+                await _pasteService.PasteAsync(text, _windowTargetService.ActivateLastExternalWindow);
             }
 
             _viewModel.State = DictationState.Idle;

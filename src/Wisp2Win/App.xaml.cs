@@ -25,7 +25,14 @@ public partial class App : System.Windows.Application
         _hotkeyService = new HotkeyService();
 
         var viewModel = new MainViewModel(settings, modelManager);
-        _coordinator = new DictationCoordinator(settings, recorder, transcriber, pasteService, windowTargetService, viewModel);
+        _coordinator = new DictationCoordinator(
+            settings,
+            recorder,
+            transcriber,
+            pasteService,
+            windowTargetService,
+            beforePaste: () => _mainWindow?.Hide(),
+            viewModel: viewModel);
 
         _mainWindow = new MainWindow(viewModel);
         _notifyIcon = new NotifyIconService(_mainWindow, _coordinator);
