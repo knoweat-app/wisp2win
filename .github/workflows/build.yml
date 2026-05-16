@@ -35,8 +35,15 @@ jobs:
         with:
           name: Wisp2Win-Setup
           path: installer/output/*.exe
+      - name: Ensure release exists
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v0.1.1 --repo knoweat-app/wisp2win `
+            || gh release create v0.1.1 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.1" --notes "Bugfix release: configurable hotkey selection and WAV file-lock fix."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.1.0 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.1.1 installer/output/*.exe --repo knoweat-app/wisp2win --clobber

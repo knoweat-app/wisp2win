@@ -23,10 +23,6 @@ This is an initial Windows scaffold:
 - Model auto-download from the official `whisper.cpp` Hugging Face model bucket.
 - Clipboard insertion via Win32 `SendInput`.
 
-## Screenshot
-
-![Wisp2Win main window](docs/screenshots/Снимок%20экрана%202026-05-16%20143535.png)
-
 ## Build
 
 Requirements:
