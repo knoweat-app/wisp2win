@@ -33,6 +33,7 @@ public sealed class HotkeyService : IDisposable
         var parsedHotkey = ParseHotkey(keyName);
         if (parsedHotkey is null)
         {
+            AppLog.Error("hotkey", $"Cannot parse hotkey: {keyName}");
             return false;
         }
 
@@ -41,12 +42,14 @@ public sealed class HotkeyService : IDisposable
         const uint modNoRepeat = 0x4000;
         if (!RegisterHotKey(_source.Handle, ProbeHotkeyId, modifiers | modNoRepeat, (uint)virtualKey))
         {
+            AppLog.Error("hotkey", $"Hotkey probe failed: {keyName}, vk={virtualKey}, modifiers={modifiers}");
             return false;
         }
 
         UnregisterHotKey(_source.Handle, ProbeHotkeyId);
         Unregister();
         _registered = RegisterHotKey(_source.Handle, HotkeyId, modifiers | modNoRepeat, (uint)virtualKey);
+        AppLog.Info("hotkey", $"Register {keyName}: {_registered}, vk={virtualKey}, modifiers={modifiers}");
         return _registered;
     }
 
@@ -93,6 +96,7 @@ public sealed class HotkeyService : IDisposable
         if (msg == WmHotkey && wParam.ToInt32() == HotkeyId)
         {
             handled = true;
+            AppLog.Info("hotkey", "Hotkey pressed");
             HotkeyPressed?.Invoke(this, EventArgs.Empty);
         }
         return IntPtr.Zero;

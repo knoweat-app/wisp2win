@@ -12,6 +12,7 @@ public sealed class DictationCoordinator : IDisposable
     private readonly PasteService _pasteService;
     private readonly WindowTargetService _windowTargetService;
     private readonly Action? _beforePaste;
+    private readonly DiagnosticsService _diagnosticsService;
     private readonly MainViewModel _viewModel;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private string? _recordingPath;
@@ -22,6 +23,7 @@ public sealed class DictationCoordinator : IDisposable
         WhisperTranscriber transcriber,
         PasteService pasteService,
         WindowTargetService windowTargetService,
+        DiagnosticsService diagnosticsService,
         Action? beforePaste,
         MainViewModel viewModel)
     {
@@ -30,8 +32,10 @@ public sealed class DictationCoordinator : IDisposable
         _transcriber = transcriber;
         _pasteService = pasteService;
         _windowTargetService = windowTargetService;
+        _diagnosticsService = diagnosticsService;
         _beforePaste = beforePaste;
         _viewModel = viewModel;
+        _viewModel.OpenLogsRequested += (_, _) => _diagnosticsService.OpenLogsDirectory();
     }
 
     public async Task ToggleAsync()
@@ -46,10 +50,12 @@ public sealed class DictationCoordinator : IDisposable
 
             if (_viewModel.State == DictationState.Recording)
             {
+                AppLog.Info("dictation", "Toggle stop");
                 await StopAndTranscribeAsync();
             }
             else
             {
+                AppLog.Info("dictation", "Toggle start");
                 StartRecording();
             }
         }
@@ -81,6 +87,7 @@ public sealed class DictationCoordinator : IDisposable
         }
         catch (Exception ex)
         {
+            AppLog.Error("model", ex);
             _viewModel.State = DictationState.Error;
             _viewModel.Status = ex.Message;
         }
@@ -117,7 +124,9 @@ public sealed class DictationCoordinator : IDisposable
             {
                 _viewModel.State = DictationState.Inserting;
                 _viewModel.Status = "Inserting";
+                AppLog.Info("paste", $"Before hide foreground={_windowTargetService.DescribeForegroundWindow()}");
                 _beforePaste?.Invoke();
+                AppLog.Info("paste", $"After hide foreground={_windowTargetService.DescribeForegroundWindow()}");
                 await _pasteService.PasteAsync(text, _windowTargetService.ActivateLastExternalWindow);
             }
 
@@ -126,6 +135,7 @@ public sealed class DictationCoordinator : IDisposable
         }
         catch (Exception ex)
         {
+            AppLog.Error("dictation", ex);
             _viewModel.State = DictationState.Error;
             _viewModel.Status = ex.Message;
         }

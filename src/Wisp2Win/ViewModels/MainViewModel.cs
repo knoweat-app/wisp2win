@@ -19,6 +19,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public event EventHandler? ToggleRequested;
     public event EventHandler? DownloadModelRequested;
     public event EventHandler? ShowWindowRequested;
+    public event EventHandler? OpenLogsRequested;
     public event EventHandler<HotkeyChangeRequest>? HotkeyChangeRequested;
 
     public MainViewModel(SettingsService settings, ModelManager modelManager)
@@ -28,6 +29,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ToggleCommand = new RelayCommand(() => ToggleRequested?.Invoke(this, EventArgs.Empty));
         DownloadModelCommand = new RelayCommand(() => DownloadModelRequested?.Invoke(this, EventArgs.Empty));
         ShowWindowCommand = new RelayCommand(() => ShowWindowRequested?.Invoke(this, EventArgs.Empty));
+        OpenLogsCommand = new RelayCommand(() => OpenLogsRequested?.Invoke(this, EventArgs.Empty));
     }
 
     public ModelManager ModelManager { get; }
@@ -41,6 +43,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ToggleCommand { get; }
     public ICommand DownloadModelCommand { get; }
     public ICommand ShowWindowCommand { get; }
+    public ICommand OpenLogsCommand { get; }
 
     public DictationState State
     {

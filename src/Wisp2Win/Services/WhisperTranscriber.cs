@@ -27,6 +27,7 @@ public sealed class WhisperTranscriber
             throw new FileNotFoundException("Model is not installed.", modelPath);
         }
 
+        AppLog.Info("transcription", $"Start wav={wavPath}, model={model.Id}, language={language}, translate={translateToEnglish}");
         using var factory = WhisperFactory.FromPath(modelPath);
         var builder = factory.CreateBuilder()
             .WithLanguage(NormalizeLanguage(language));
@@ -50,7 +51,9 @@ public sealed class WhisperTranscriber
             }
         }
 
-        return CleanTranscript(transcript.ToString());
+        var cleaned = CleanTranscript(transcript.ToString());
+        AppLog.Info("transcription", $"Done chars={cleaned.Length}");
+        return cleaned;
     }
 
     private static string NormalizeLanguage(string language) =>

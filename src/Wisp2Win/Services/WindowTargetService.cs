@@ -22,6 +22,7 @@ public sealed class WindowTargetService : IDisposable
         if (IsUsableTarget(foreground))
         {
             _lastExternalWindow = foreground;
+            AppLog.Info("target", $"Captured {DescribeWindow(_lastExternalWindow)}");
         }
     }
 
@@ -34,6 +35,7 @@ public sealed class WindowTargetService : IDisposable
 
         if (!IsUsableTarget(_lastExternalWindow))
         {
+            AppLog.Error("target", "No usable external window to activate");
             return false;
         }
 
@@ -43,7 +45,10 @@ public sealed class WindowTargetService : IDisposable
         }
 
         ForceForegroundWindow(_lastExternalWindow);
-        return GetForegroundWindow() == _lastExternalWindow;
+        var active = GetForegroundWindow();
+        var ok = active == _lastExternalWindow;
+        AppLog.Info("target", $"Activated ok={ok}; target={DescribeWindow(_lastExternalWindow)}; foreground={DescribeWindow(active)}");
+        return ok;
     }
 
     private static void ForceForegroundWindow(IntPtr window)
@@ -98,6 +103,19 @@ public sealed class WindowTargetService : IDisposable
         }
 
         return !string.IsNullOrWhiteSpace(GetWindowTitle(window));
+    }
+
+    public string DescribeForegroundWindow() => DescribeWindow(GetForegroundWindow());
+
+    private static string DescribeWindow(IntPtr window)
+    {
+        if (window == IntPtr.Zero)
+        {
+            return "0x0";
+        }
+
+        GetWindowThreadProcessId(window, out var processId);
+        return $"0x{window.ToInt64():X}, pid={processId}, title=\"{GetWindowTitle(window)}\"";
     }
 
     private static string GetWindowTitle(IntPtr window)

@@ -22,6 +22,7 @@ public partial class App : System.Windows.Application
         var transcriber = new WhisperTranscriber(modelManager);
         var pasteService = new PasteService();
         var windowTargetService = new WindowTargetService();
+        var diagnosticsService = new DiagnosticsService();
         _hotkeyService = new HotkeyService();
 
         var viewModel = new MainViewModel(settings, modelManager);
@@ -31,8 +32,11 @@ public partial class App : System.Windows.Application
             transcriber,
             pasteService,
             windowTargetService,
+            diagnosticsService,
             beforePaste: () => _mainWindow?.Hide(),
             viewModel: viewModel);
+
+        AppLog.Info("app", "Started");
 
         _mainWindow = new MainWindow(viewModel);
         _notifyIcon = new NotifyIconService(_mainWindow, _coordinator);

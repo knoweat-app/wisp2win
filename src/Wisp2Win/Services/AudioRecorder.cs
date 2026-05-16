@@ -34,6 +34,7 @@ public sealed class AudioRecorder : IDisposable
         _waveIn.DataAvailable += OnDataAvailable;
         _waveIn.RecordingStopped += (_, _) => Cleanup();
         _waveIn.StartRecording();
+        AppLog.Info("recording", $"Started: {_currentPath}");
         return _currentPath;
     }
 
@@ -48,6 +49,7 @@ public sealed class AudioRecorder : IDisposable
         _currentPath = null;
         _waveIn.StopRecording();
         Cleanup();
+        AppLog.Info("recording", $"Stopped: {path}");
         return path;
     }
 

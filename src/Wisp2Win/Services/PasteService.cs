@@ -18,9 +18,12 @@ public sealed class PasteService
         }
 
         System.Windows.Clipboard.SetText(text);
-        activateTarget?.Invoke();
+        AppLog.Info("paste", $"Clipboard set chars={text.Length}");
+        var activated = activateTarget?.Invoke();
+        AppLog.Info("paste", $"Activate target result={activated}");
         await Task.Delay(220, cancellationToken);
-        SendCtrlV();
+        var sent = SendCtrlV();
+        AppLog.Info("paste", $"Send Ctrl+V result={sent}");
         await Task.Delay(700, cancellationToken);
 
         if (previous is not null)
@@ -36,7 +39,7 @@ public sealed class PasteService
         }
     }
 
-    private static void SendCtrlV()
+    private static bool SendCtrlV()
     {
         INPUT[] inputs =
         [
@@ -45,7 +48,13 @@ public sealed class PasteService
             KeyUp(VirtualKey.V),
             KeyUp(VirtualKey.Control)
         ];
-        SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<INPUT>());
+        var sent = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<INPUT>());
+        if (sent != inputs.Length)
+        {
+            AppLog.Error("paste", $"SendInput sent {sent}/{inputs.Length}, win32={Marshal.GetLastWin32Error()}");
+        }
+
+        return sent == inputs.Length;
     }
 
     private static INPUT KeyDown(VirtualKey key) => new()
