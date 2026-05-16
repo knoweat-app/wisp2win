@@ -9,6 +9,7 @@ public sealed class DictationCoordinator : IDisposable
     private readonly SettingsService _settings;
     private readonly AudioRecorder _recorder;
     private readonly WhisperTranscriber _transcriber;
+    private readonly TranscriptPostProcessor _postProcessor = new();
     private readonly PasteService _pasteService;
     private readonly WindowTargetService _windowTargetService;
     private readonly Action? _beforePaste;
@@ -118,6 +119,11 @@ public sealed class DictationCoordinator : IDisposable
                 ModelProfile.ById(_settings.Current.ModelId),
                 _settings.Current.Language,
                 _settings.Current.TranslateToEnglish);
+
+            if (_settings.Current.PolishTranscript)
+            {
+                text = _postProcessor.Polish(text, _settings.Current.Language);
+            }
 
             _viewModel.LastTranscript = text;
             if (!string.IsNullOrWhiteSpace(text) && _settings.Current.PasteAfterTranscription)

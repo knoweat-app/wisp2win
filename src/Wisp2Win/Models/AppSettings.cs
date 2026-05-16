@@ -7,6 +7,7 @@ public sealed class AppSettings
     public string Hotkey { get; set; } = "Oem5";
     public string PasteShortcut { get; set; } = "auto";
     public bool PasteAfterTranscription { get; set; } = true;
+    public bool PolishTranscript { get; set; } = true;
     public bool TranslateToEnglish { get; set; }
     public bool StartMinimized { get; set; }
 }

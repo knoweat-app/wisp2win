@@ -40,10 +40,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view v0.1.7 --repo knoweat-app/wisp2win `
-            || gh release create v0.1.7 --repo knoweat-app/wisp2win --title "Wisp2Win v0.1.7" --notes "Add direct text typing insert mode and use it automatically for Termius."
+          gh release view v0.2.1 --repo knoweat-app/wisp2win `
+            || gh release create v0.2.1 --repo knoweat-app/wisp2win --title "Wisp2Win v0.2.1" --notes "Add offline transcript polishing and document the macOS app plan."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v0.1.7 installer/output/*.exe --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v0.2.1 installer/output/*.exe --repo knoweat-app/wisp2win --clobber

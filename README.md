@@ -22,6 +22,8 @@ This is an initial Windows scaffold:
 - Local transcription via `Whisper.net` and bundled `Whisper.net.Runtime`.
 - Model auto-download from the official `whisper.cpp` Hugging Face model bucket.
 - Clipboard insertion via Win32 `SendInput`.
+- Direct text typing fallback for apps that reject clipboard paste.
+- Optional offline transcript polishing for punctuation and sentence casing.
 
 ## Build
 
@@ -61,3 +63,4 @@ The default model is `base`, which is a practical starting point for dictation. 
 - Real-time recording level HUD.
 - Model checksum verification.
 - Signed installer and auto-update channel.
+- macOS native app; see `docs/macos-plan.md`.

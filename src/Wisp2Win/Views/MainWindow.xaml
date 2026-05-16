@@ -74,16 +74,18 @@
                     <ComboBoxItem Content="auto" />
                 </ComboBox>
 
-                <CheckBox Grid.Row="2"
-                          Grid.Column="0"
-                          Margin="0,0,12,12"
-                          IsChecked="{Binding PasteAfterTranscription}"
-                          Content="Paste into active app" />
-                <CheckBox Grid.Row="2"
-                          Grid.Column="1"
-                          Margin="12,0,0,12"
-                          IsChecked="{Binding TranslateToEnglish}"
-                          Content="Translate to English" />
+                <WrapPanel Grid.Row="2"
+                           Grid.ColumnSpan="2"
+                           Margin="0,0,0,12">
+                    <CheckBox Margin="0,0,18,0"
+                              IsChecked="{Binding PasteAfterTranscription}"
+                              Content="Paste into active app" />
+                    <CheckBox Margin="0,0,18,0"
+                              IsChecked="{Binding PolishTranscript}"
+                              Content="Polish transcript" />
+                    <CheckBox IsChecked="{Binding TranslateToEnglish}"
+                              Content="Translate to English" />
+                </WrapPanel>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Hotkey" Foreground="{StaticResource MutedTextBrush}" />
                 <ComboBox Grid.Row="4"

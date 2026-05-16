@@ -191,6 +191,22 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool PolishTranscript
+    {
+        get => Settings.PolishTranscript;
+        set
+        {
+            if (Settings.PolishTranscript == value)
+            {
+                return;
+            }
+
+            Settings.PolishTranscript = value;
+            _settings.Save();
+            OnPropertyChanged();
+        }
+    }
+
     public bool TranslateToEnglish
     {
         get => Settings.TranslateToEnglish;
