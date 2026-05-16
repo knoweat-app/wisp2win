@@ -10,6 +10,7 @@ public sealed class DictationCoordinator : IDisposable
     private readonly AudioRecorder _recorder;
     private readonly WhisperTranscriber _transcriber;
     private readonly PasteService _pasteService;
+    private readonly WindowTargetService _windowTargetService;
     private readonly MainViewModel _viewModel;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private string? _recordingPath;
@@ -19,12 +20,14 @@ public sealed class DictationCoordinator : IDisposable
         AudioRecorder recorder,
         WhisperTranscriber transcriber,
         PasteService pasteService,
+        WindowTargetService windowTargetService,
         MainViewModel viewModel)
     {
         _settings = settings;
         _recorder = recorder;
         _transcriber = transcriber;
         _pasteService = pasteService;
+        _windowTargetService = windowTargetService;
         _viewModel = viewModel;
     }
 
@@ -82,6 +85,7 @@ public sealed class DictationCoordinator : IDisposable
 
     private void StartRecording()
     {
+        _windowTargetService.CaptureForegroundWindow();
         _recordingPath = _recorder.Start();
         _viewModel.State = DictationState.Recording;
         _viewModel.Status = "Recording";
@@ -110,6 +114,7 @@ public sealed class DictationCoordinator : IDisposable
             {
                 _viewModel.State = DictationState.Inserting;
                 _viewModel.Status = "Inserting";
+                _windowTargetService.ActivateLastExternalWindow();
                 await _pasteService.PasteAsync(text);
             }
 
@@ -147,6 +152,7 @@ public sealed class DictationCoordinator : IDisposable
     public void Dispose()
     {
         _recorder.Dispose();
+        _windowTargetService.Dispose();
         TryDelete(_recordingPath);
         _gate.Dispose();
     }

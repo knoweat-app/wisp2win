@@ -21,10 +21,11 @@ public partial class App : System.Windows.Application
         var recorder = new AudioRecorder();
         var transcriber = new WhisperTranscriber(modelManager);
         var pasteService = new PasteService();
+        var windowTargetService = new WindowTargetService();
         _hotkeyService = new HotkeyService();
 
         var viewModel = new MainViewModel(settings, modelManager);
-        _coordinator = new DictationCoordinator(settings, recorder, transcriber, pasteService, viewModel);
+        _coordinator = new DictationCoordinator(settings, recorder, transcriber, pasteService, windowTargetService, viewModel);
 
         _mainWindow = new MainWindow(viewModel);
         _notifyIcon = new NotifyIconService(_mainWindow, _coordinator);
