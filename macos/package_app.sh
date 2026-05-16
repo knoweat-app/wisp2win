@@ -49,7 +49,8 @@ fi
 chmod +x "$APP_BIN"
 
 if [ -f "$ROOT_DIR/macos/whisper/whisper-cli" ]; then
-  cp "$ROOT_DIR/macos/whisper/whisper-cli" "$RESOURCES_DIR/whisper/whisper-cli"
+  # Copy whisper-cli and any bundled dylibs (ggml backends) into the app bundle.
+  cp -R "$ROOT_DIR/macos/whisper/." "$RESOURCES_DIR/whisper/"
   chmod +x "$RESOURCES_DIR/whisper/whisper-cli"
 else
   echo "Missing macos/whisper/whisper-cli. Run ./macos/build_whisper.sh before packaging." >&2
