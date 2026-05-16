@@ -6,7 +6,8 @@ public sealed record PasteShortcutOption(string Value, string DisplayName)
     [
         new("auto", "Auto"),
         new("ctrl-v", "Ctrl+V"),
-        new("ctrl-shift-v", "Ctrl+Shift+V")
+        new("ctrl-shift-v", "Ctrl+Shift+V"),
+        new("type-text", "Type text")
     ];
 
     public static PasteShortcutOption ByValue(string value) =>

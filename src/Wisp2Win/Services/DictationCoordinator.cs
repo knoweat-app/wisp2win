@@ -174,15 +174,17 @@ public sealed class DictationCoordinator : IDisposable
         }
 
         var title = _windowTargetService.LastExternalWindowTitle;
-        var shortcut = IsTerminalLike(title) ? "ctrl-shift-v" : "ctrl-v";
-        AppLog.Info("paste", $"Auto shortcut={shortcut}; target={_windowTargetService.DescribeLastExternalWindow()}");
-        return shortcut;
+        var method = IsTermius(title) ? "type-text" : IsTerminalLike(title) ? "ctrl-shift-v" : "ctrl-v";
+        AppLog.Info("paste", $"Auto insert method={method}; target={_windowTargetService.DescribeLastExternalWindow()}");
+        return method;
     }
+
+    private static bool IsTermius(string title) =>
+        title.Contains("Termius", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsTerminalLike(string title)
     {
-        return title.Contains("Termius", StringComparison.OrdinalIgnoreCase)
-            || title.Contains("Windows Terminal", StringComparison.OrdinalIgnoreCase)
+        return title.Contains("Windows Terminal", StringComparison.OrdinalIgnoreCase)
             || title.Contains("PowerShell", StringComparison.OrdinalIgnoreCase)
             || title.Contains("Command Prompt", StringComparison.OrdinalIgnoreCase)
             || title.Contains("cmd.exe", StringComparison.OrdinalIgnoreCase)

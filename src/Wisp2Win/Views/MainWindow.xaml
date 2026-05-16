@@ -93,7 +93,7 @@
                           SelectedItem="{Binding SelectedHotkey}"
                           DisplayMemberPath="DisplayName" />
 
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Paste shortcut" Foreground="{StaticResource MutedTextBrush}" />
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Insert method" Foreground="{StaticResource MutedTextBrush}" />
                 <ComboBox Grid.Row="6"
                           Grid.Column="0"
                           Margin="0,6,12,0"

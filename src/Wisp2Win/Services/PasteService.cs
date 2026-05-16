@@ -7,10 +7,20 @@ public sealed class PasteService
 {
     public async Task PasteAsync(
         string text,
-        string shortcut,
+        string insertMethod,
         Func<bool>? activateTarget = null,
         CancellationToken cancellationToken = default)
     {
+        if (string.Equals(insertMethod, "type-text", StringComparison.OrdinalIgnoreCase))
+        {
+            var activatedForTyping = activateTarget?.Invoke();
+            AppLog.Info("paste", $"Activate target result={activatedForTyping}");
+            await Task.Delay(220, cancellationToken);
+            var typed = TypeText(text);
+            AppLog.Info("paste", $"Type text chars={text.Length}, result={typed}");
+            return;
+        }
+
         System.Windows.IDataObject? previous = null;
         try
         {
@@ -26,8 +36,8 @@ public sealed class PasteService
         var activated = activateTarget?.Invoke();
         AppLog.Info("paste", $"Activate target result={activated}");
         await Task.Delay(220, cancellationToken);
-        var sent = SendPasteShortcut(shortcut);
-        AppLog.Info("paste", $"Send {shortcut} result={sent}");
+        var sent = SendPasteShortcut(insertMethod);
+        AppLog.Info("paste", $"Send {insertMethod} result={sent}");
         await Task.Delay(700, cancellationToken);
 
         if (previous is not null)
@@ -74,6 +84,33 @@ public sealed class PasteService
         return sent == inputs.Length;
     }
 
+    private static bool TypeText(string text)
+    {
+        foreach (var ch in text)
+        {
+            if (ch == '\r')
+            {
+                continue;
+            }
+
+            Input[] inputs =
+            [
+                UnicodeKey(ch, keyUp: false),
+                UnicodeKey(ch, keyUp: true)
+            ];
+            var sent = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<Input>());
+            if (sent != inputs.Length)
+            {
+                AppLog.Error("paste", $"Unicode SendInput sent {sent}/{inputs.Length}, char=U+{(int)ch:X4}, win32={Marshal.GetLastWin32Error()}");
+                return false;
+            }
+
+            Thread.Sleep(2);
+        }
+
+        return true;
+    }
+
     private static Input KeyDown(VirtualKey key) => new()
     {
         type = 1,
@@ -86,6 +123,16 @@ public sealed class PasteService
         ki = new KeyboardInput { wVk = (ushort)key, dwFlags = 0x0002 }
     };
 
+    private static Input UnicodeKey(char ch, bool keyUp) => new()
+    {
+        type = 1,
+        ki = new KeyboardInput
+        {
+            wScan = ch,
+            dwFlags = keyUp ? KeyEventUnicode | KeyEventKeyUp : KeyEventUnicode
+        }
+    };
+
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint nInputs, Input[] pInputs, int cbSize);
 
@@ -95,6 +142,9 @@ public sealed class PasteService
         Shift = 0x10,
         V = 0x56
     }
+
+    private const uint KeyEventKeyUp = 0x0002;
+    private const uint KeyEventUnicode = 0x0004;
 
     [StructLayout(LayoutKind.Explicit, Size = 40)]
     private struct Input
