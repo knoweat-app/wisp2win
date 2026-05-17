@@ -36,39 +36,42 @@ fi
 
 chmod +x "$OUTPUT_BIN"
 
-# ggml backends are often still produced as dylibs even with BUILD_SHARED_LIBS=OFF.
-# Bundle every non-system .dylib from the build tree alongside whisper-cli so the
-# app bundle is self-contained, then rewrite the load paths to @loader_path so the
-# OS finds them relative to whisper-cli (in Resources/whisper/).
+# ggml v1.7.6 may still produce backend dylibs even with BUILD_SHARED_LIBS=OFF.
+# Bundle every .dylib from the build tree alongside whisper-cli and rewrite load
+# paths to @loader_path so dyld finds them relative to the binary at runtime.
 
 echo "Scanning for dylib dependencies..."
 
-# Copy all dylibs produced by the build into the output dir.
+# Copy every dylib produced by cmake into the output dir and fix its own ID.
 find "$BUILD_DIR" -name "*.dylib" -type f | while read -r dylib; do
   libname="$(basename "$dylib")"
   dest="$OUTPUT_DIR/$libname"
   echo "  bundling $libname"
   cp "$dylib" "$dest"
   chmod 755 "$dest"
-  # Change the dylib's own ID so it knows it lives at @loader_path.
   install_name_tool -id "@loader_path/$libname" "$dest"
 done
 
-# Rewrite @rpath references in whisper-cli to @loader_path.
+# Rewrite @rpath/libX references in a binary to @loader_path/libX.
+# Uses a subshell variable to avoid the pipefail-from-grep-no-match trap.
 rewrite_rpath_refs() {
   local binary="$1"
-  otool -L "$binary" | awk '{print $1}' | grep '^@rpath/' | while read -r dep; do
+  local rpath_deps
+  rpath_deps="$(otool -L "$binary" | awk '{print $1}' | grep '^@rpath/' || true)"
+  [ -z "$rpath_deps" ] && return 0
+  while IFS= read -r dep; do
     local libname="${dep#@rpath/}"
     if [ -f "$OUTPUT_DIR/$libname" ]; then
       install_name_tool -change "$dep" "@loader_path/$libname" "$binary"
       echo "  rewrote $dep → @loader_path/$libname in $(basename "$binary")"
+    else
+      echo "  WARNING: no bundled dylib for $dep" >&2
     fi
-  done
+  done <<< "$rpath_deps"
 }
 
 rewrite_rpath_refs "$OUTPUT_BIN"
 
-# Also rewrite cross-references inside the bundled dylibs themselves.
 for dylib in "$OUTPUT_DIR"/*.dylib; do
   [ -f "$dylib" ] || continue
   rewrite_rpath_refs "$dylib"
