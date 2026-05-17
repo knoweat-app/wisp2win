@@ -88,4 +88,8 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 </plist>
 PLIST
 
+# Ad-hoc signature so Gatekeeper shows "Open Anyway" instead of "cannot verify".
+# Full notarization requires a paid Apple Developer ID certificate.
+codesign --force --deep --sign - "$APP_DIR"
+
 ditto -c -k --sequesterRsrc --keepParent "$APP_DIR" "$ROOT_DIR/macos/output/Wisp2Mac-v$VERSION-macos-universal.zip"
