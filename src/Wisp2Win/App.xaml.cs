@@ -1,6 +1,5 @@
 using System.IO;
 using System.Windows;
-using Microsoft.Win32;
 using Wisp2Win.Services;
 using Wisp2Win.ViewModels;
 using Wisp2Win.Views;
@@ -68,7 +67,7 @@ public partial class App : System.Windows.Application
 
     private async Task ImportAudioAsync()
     {
-        var dialog = new OpenFileDialog
+        var dialog = new Microsoft.Win32.OpenFileDialog
         {
             Title = "Выберите аудиофайл",
             Filter = AudioFileConverter.DialogFilter,
@@ -90,7 +89,7 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var dialog = new SaveFileDialog
+        var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Title = "Сохранить расшифровку",
             Filter = "Text files|*.txt|All files|*.*",
