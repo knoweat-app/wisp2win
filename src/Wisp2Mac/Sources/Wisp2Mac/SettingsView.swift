@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @ObservedObject var state: AppState
@@ -8,11 +9,34 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 18) {
             header
             settingsGrid
+            fileActions
             transcriptPanel
         }
         .padding(24)
         .background(Color(red: 0.97, green: 0.98, blue: 0.99))
         .frame(minWidth: 520, minHeight: 420)
+    }
+
+    // MARK: - File actions
+
+    private var fileActions: some View {
+        HStack(spacing: 10) {
+            Text("Файлы")
+                .foregroundStyle(.secondary)
+            Spacer()
+            Button("Импорт аудио") {
+                chooseAudioFile()
+            }
+            .disabled(state.isRecording || state.isBusy)
+            Button("Экспорт TXT") {
+                saveTranscript()
+            }
+            .disabled(state.lastTranscript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+        .padding(12)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.10)))
     }
 
     // MARK: - Header
@@ -181,6 +205,40 @@ struct SettingsView: View {
             get: { state.settings[keyPath: kp] },
             set: { state.settings[keyPath: kp] = $0; state.saveSettings() }
         )
+    }
+
+    private func chooseAudioFile() {
+        let panel = NSOpenPanel()
+        panel.title = "Выберите аудиофайл"
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.allowedContentTypes = [.audio]
+
+        if panel.runModal() == .OK, let url = panel.url {
+            Task { await state.importAudioFile(url) }
+        }
+    }
+
+    private func saveTranscript() {
+        let panel = NSSavePanel()
+        panel.title = "Сохранить расшифровку"
+        panel.allowedContentTypes = [.plainText]
+        panel.nameFieldStringValue = "wisp2mac-transcript-\(Self.exportTimestamp()).txt"
+
+        if panel.runModal() == .OK, let url = panel.url {
+            do {
+                try state.exportTranscript(to: url)
+            } catch {
+                state.status = error.localizedDescription
+                AppLog.error("export", error)
+            }
+        }
+    }
+
+    private static func exportTimestamp() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmm"
+        return formatter.string(from: Date())
     }
 }
 

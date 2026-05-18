@@ -8,6 +8,7 @@ public sealed class DictationCoordinator : IDisposable
 {
     private readonly SettingsService _settings;
     private readonly AudioRecorder _recorder;
+    private readonly AudioFileConverter _audioFileConverter;
     private readonly WhisperTranscriber _transcriber;
     private readonly TranscriptPostProcessor _postProcessor = new();
     private readonly PasteService _pasteService;
@@ -21,6 +22,7 @@ public sealed class DictationCoordinator : IDisposable
     public DictationCoordinator(
         SettingsService settings,
         AudioRecorder recorder,
+        AudioFileConverter audioFileConverter,
         WhisperTranscriber transcriber,
         PasteService pasteService,
         WindowTargetService windowTargetService,
@@ -30,6 +32,7 @@ public sealed class DictationCoordinator : IDisposable
     {
         _settings = settings;
         _recorder = recorder;
+        _audioFileConverter = audioFileConverter;
         _transcriber = transcriber;
         _pasteService = pasteService;
         _windowTargetService = windowTargetService;
@@ -95,6 +98,52 @@ public sealed class DictationCoordinator : IDisposable
         }
     }
 
+    public async Task ImportAudioAsync(string sourcePath)
+    {
+        await _gate.WaitAsync();
+        try
+        {
+            if (_viewModel.State is DictationState.Recording or DictationState.Transcribing or DictationState.DownloadingModel or DictationState.Inserting)
+            {
+                return;
+            }
+
+            _viewModel.State = DictationState.Transcribing;
+            _viewModel.Status = "Подготовка аудиофайла";
+            string? wavPath = null;
+
+            try
+            {
+                await EnsureModelAsync();
+                EnsureSelectedModelInstalled();
+                _viewModel.State = DictationState.Transcribing;
+                _viewModel.Status = "Подготовка аудиофайла";
+
+                wavPath = _audioFileConverter.ConvertToWhisperWav(sourcePath);
+                _viewModel.Status = "Распознавание файла";
+
+                var text = await TranscribeCurrentSettingsAsync(wavPath);
+                _viewModel.LastTranscript = text;
+                _viewModel.State = DictationState.Idle;
+                _viewModel.Status = string.IsNullOrWhiteSpace(text) ? "Речь не обнаружена" : "Файл расшифрован";
+            }
+            catch (Exception ex)
+            {
+                AppLog.Error("import", ex);
+                _viewModel.State = DictationState.Error;
+                _viewModel.Status = ex.Message;
+            }
+            finally
+            {
+                TryDelete(wavPath);
+            }
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     private void StartRecording()
     {
         _windowTargetService.CaptureForegroundWindow();
@@ -113,18 +162,10 @@ public sealed class DictationCoordinator : IDisposable
         try
         {
             await EnsureModelAsync();
+            EnsureSelectedModelInstalled();
             _viewModel.State = DictationState.Transcribing;
 
-            var text = await _transcriber.TranscribeAsync(
-                path,
-                ModelProfile.ById(_settings.Current.ModelId),
-                _settings.Current.Language,
-                _settings.Current.TranslateToEnglish);
-
-            if (_settings.Current.PolishTranscript)
-            {
-                text = _postProcessor.Polish(text, _settings.Current.Language);
-            }
+            var text = await TranscribeCurrentSettingsAsync(path);
 
             _viewModel.LastTranscript = text;
             if (!string.IsNullOrWhiteSpace(text) && _settings.Current.PasteAfterTranscription)
@@ -169,6 +210,31 @@ public sealed class DictationCoordinator : IDisposable
         catch
         {
             // Temp audio cleanup is best-effort.
+        }
+    }
+
+    private async Task<string> TranscribeCurrentSettingsAsync(string wavPath)
+    {
+        var text = await _transcriber.TranscribeAsync(
+            wavPath,
+            ModelProfile.ById(_settings.Current.ModelId),
+            _settings.Current.Language,
+            _settings.Current.TranslateToEnglish);
+
+        if (_settings.Current.PolishTranscript)
+        {
+            text = _postProcessor.Polish(text, _settings.Current.Language);
+        }
+
+        return text;
+    }
+
+    private void EnsureSelectedModelInstalled()
+    {
+        var profile = ModelProfile.ById(_settings.Current.ModelId);
+        if (!_viewModel.ModelManager.IsInstalled(profile))
+        {
+            throw new InvalidOperationException($"Model {profile.DisplayName} is not installed.");
         }
     }
 

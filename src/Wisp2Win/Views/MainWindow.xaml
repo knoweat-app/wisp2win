@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -174,6 +175,34 @@
         </Border>
 
         <Border Grid.Row="3"
+                Margin="0,16,0,0"
+                Padding="12"
+                CornerRadius="8"
+                Background="White"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right"
+                        Width="128"
+                        Height="32"
+                        Margin="8,0,0,0"
+                        Command="{Binding ExportTranscriptCommand}"
+                        Content="Экспорт TXT"
+                        IsEnabled="{Binding CanExportTranscript}" />
+                <Button DockPanel.Dock="Right"
+                        Width="148"
+                        Height="32"
+                        Command="{Binding ImportAudioCommand}"
+                        Content="Импорт аудио"
+                        IsEnabled="{Binding CanStartImport}" />
+                <TextBlock Text="Файлы"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource MutedTextBrush}" />
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Row="4"
                 Margin="0,16,0,0"
                 Padding="16"
                 CornerRadius="8"

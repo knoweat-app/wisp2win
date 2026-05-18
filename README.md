@@ -10,15 +10,16 @@ Wisp2Win started as a Windows-native version of the macOS dictation workflow and
 4. The transcript is pasted into the active application.
 
 The apps do not require Python, Homebrew-style tooling, or a manually installed Whisper binary. On first launch they download the selected Whisper model into the platform model directory.
+Speaker diarization is not advertised as a Whisper-only feature; local diarization remains an experimental research track documented in `docs/diarization-experiment.md`.
 
 ## Current Status
 
-Release `v0.3.3` publishes Windows and macOS artifacts:
+Release `v0.4.0` publishes Windows and macOS artifacts:
 
-- `Wisp2Win-Setup-v0.3.3-win-x64.exe`
-- `Wisp2Win-Portable-v0.3.3-win-x64.zip`
-- `Wisp2Mac-v0.3.3-macos-universal.zip`
-- `Wisp2Mac-v0.3.3-macos-universal.tar.gz`
+- `Wisp2Win-Setup-v0.4.0-win-x64.exe`
+- `Wisp2Win-Portable-v0.4.0-win-x64.zip`
+- `Wisp2Mac-v0.4.0-macos-universal.zip`
+- `Wisp2Mac-v0.4.0-macos-universal.tar.gz`
 
 Windows:
 
@@ -27,6 +28,8 @@ Windows:
 - Configurable global hotkey via Win32 `RegisterHotKey`.
 - Microphone recording via NAudio.
 - Local transcription via `Whisper.net` and bundled `Whisper.net.Runtime`.
+- Audio file import for plain local transcription.
+- TXT export for the latest transcript.
 - Model auto-download from the official `whisper.cpp` Hugging Face model bucket.
 - Clipboard insertion via Win32 `SendInput`.
 - Direct text typing fallback for apps that reject clipboard paste.
@@ -38,6 +41,8 @@ macOS:
 - Configurable global hotkey.
 - Microphone recording and local transcription through bundled `whisper-cli`.
 - Model auto-download with install status in the UI.
+- Audio file import for plain local transcription.
+- TXT export for the latest transcript.
 - Clipboard paste and direct text typing modes.
 - Recording overlay, logs, and settings window.
 - Ad-hoc codesigned app bundle so Gatekeeper can show "Open Anyway".
@@ -102,3 +107,4 @@ The default model is `small`, which gives noticeably better Russian dictation qu
 - Signed installer and auto-update channel.
 - Developer ID signed and notarized macOS DMG.
 - Shared `Wisp2Core` for common model metadata and transcript polishing.
+- Experimental local speaker diarization research path.

@@ -17,6 +17,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? ToggleRequested;
+    public event EventHandler? ImportAudioRequested;
+    public event EventHandler? ExportTranscriptRequested;
     public event EventHandler? DownloadModelRequested;
     public event EventHandler? ShowWindowRequested;
     public event EventHandler? OpenLogsRequested;
@@ -27,6 +29,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _settings = settings;
         ModelManager = modelManager;
         ToggleCommand = new RelayCommand(() => ToggleRequested?.Invoke(this, EventArgs.Empty));
+        ImportAudioCommand = new RelayCommand(() => ImportAudioRequested?.Invoke(this, EventArgs.Empty));
+        ExportTranscriptCommand = new RelayCommand(() => ExportTranscriptRequested?.Invoke(this, EventArgs.Empty));
         DownloadModelCommand = new RelayCommand(() => DownloadModelRequested?.Invoke(this, EventArgs.Empty));
         ShowWindowCommand = new RelayCommand(() => ShowWindowRequested?.Invoke(this, EventArgs.Empty));
         OpenLogsCommand = new RelayCommand(() => OpenLogsRequested?.Invoke(this, EventArgs.Empty));
@@ -43,6 +47,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public AppSettings Settings => _settings.Current;
 
     public ICommand ToggleCommand { get; }
+    public ICommand ImportAudioCommand { get; }
+    public ICommand ExportTranscriptCommand { get; }
     public ICommand DownloadModelCommand { get; }
     public ICommand ShowWindowCommand { get; }
     public ICommand OpenLogsCommand { get; }
@@ -56,6 +62,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
             {
                 OnPropertyChanged(nameof(ToggleText));
                 OnPropertyChanged(nameof(IsBusy));
+                OnPropertyChanged(nameof(IsDownloading));
+                OnPropertyChanged(nameof(CanStartImport));
             }
         }
     }
@@ -69,7 +77,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string LastTranscript
     {
         get => _lastTranscript;
-        set => Set(ref _lastTranscript, value);
+        set
+        {
+            if (Set(ref _lastTranscript, value))
+            {
+                OnPropertyChanged(nameof(CanExportTranscript));
+            }
+        }
     }
 
     public double DownloadProgress
@@ -99,6 +113,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool IsBusy => State is DictationState.DownloadingModel or DictationState.Transcribing or DictationState.Inserting;
 
     public bool IsDownloading => State == DictationState.DownloadingModel;
+
+    public bool CanStartImport => State is not (DictationState.Recording or DictationState.DownloadingModel or DictationState.Transcribing or DictationState.Inserting);
+
+    public bool CanExportTranscript => !string.IsNullOrWhiteSpace(LastTranscript);
 
     public bool IsModelInstalled => ModelManager.IsInstalled(SelectedModel);
 

@@ -17,6 +17,7 @@ final class AppState: ObservableObject {
 
     private let settingsStore = SettingsStore()
     private let recorder = AudioRecorder()
+    private let audioFileConverter = AudioFileConverter()
     private let transcriber = WhisperTranscriber()
     private let postProcessor = TranscriptPostProcessor()
     private let activeAppTracker = ActiveAppTracker()
@@ -84,6 +85,52 @@ final class AppState: ObservableObject {
         }
     }
 
+    func importAudioFile(_ sourceURL: URL) async {
+        if isRecording || isBusy {
+            return
+        }
+
+        isBusy = true
+        status = "Подготовка аудиофайла"
+        var wavURL: URL?
+        defer {
+            if let wavURL {
+                try? FileManager.default.removeItem(at: wavURL)
+                try? FileManager.default.removeItem(at: wavURL.deletingPathExtension().appendingPathExtension("txt"))
+            }
+            isBusy = false
+        }
+
+        do {
+            await ensureModel()
+            try ensureSelectedModelInstalled()
+            status = "Подготовка аудиофайла"
+            wavURL = try audioFileConverter.convertToWhisperWav(sourceURL: sourceURL)
+            guard let wavURL else {
+                throw WispError("Не удалось подготовить аудиофайл")
+            }
+            status = "Распознавание файла"
+
+            let text = try await transcribeCurrentSettings(wavURL: wavURL)
+            refreshModelInstalled()
+            lastTranscript = text
+            status = text.isEmpty ? "Речь не обнаружена" : "Файл расшифрован"
+        } catch {
+            status = error.localizedDescription
+            AppLog.error("import", error)
+        }
+    }
+
+    func exportTranscript(to destinationURL: URL) throws {
+        let text = lastTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else {
+            throw WispError("Нет текста для экспорта")
+        }
+
+        try text.write(to: destinationURL, atomically: true, encoding: .utf8)
+        status = "TXT сохранен"
+    }
+
     private func startRecording() {
         do {
             targetApp = activeAppTracker.capture()
@@ -113,16 +160,9 @@ final class AppState: ObservableObject {
             let wavURL = try recorder.stop()
             self.recordingURL = nil
             await ensureModel()
+            try ensureSelectedModelInstalled()
 
-            var text = try await transcriber.transcribe(
-                wavURL: wavURL,
-                modelPath: modelManager.path(for: ModelProfile.byId(settings.modelId)),
-                language: settings.language
-            )
-
-            if settings.polishTranscript {
-                text = postProcessor.polish(text, language: settings.language)
-            }
+            let text = try await transcribeCurrentSettings(wavURL: wavURL)
 
             refreshModelInstalled()
             lastTranscript = text
@@ -139,6 +179,27 @@ final class AppState: ObservableObject {
         }
 
         isBusy = false
+    }
+
+    private func transcribeCurrentSettings(wavURL: URL) async throws -> String {
+        var text = try await transcriber.transcribe(
+            wavURL: wavURL,
+            modelPath: modelManager.path(for: ModelProfile.byId(settings.modelId)),
+            language: settings.language
+        )
+
+        if settings.polishTranscript {
+            text = postProcessor.polish(text, language: settings.language)
+        }
+
+        return text
+    }
+
+    private func ensureSelectedModelInstalled() throws {
+        let model = ModelProfile.byId(settings.modelId)
+        guard modelManager.isInstalled(model) else {
+            throw WispError("Модель \(model.displayName) не установлена")
+        }
     }
 
     private func resolveInsertMethod() -> InsertMethod {
