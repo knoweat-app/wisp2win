@@ -68,14 +68,20 @@ struct SettingsView: View {
                     .labelsHidden()
                 }
 
-                field("Модель") {
-                    if state.isBusy && state.downloadProgress < 1 {
-                        HStack(spacing: 8) {
-                            ProgressView(value: state.downloadProgress)
-                            Text("\(Int(state.downloadProgress * 100))%")
+                field("Статус модели") {
+                    if state.isDownloadingModel {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 8) {
+                                ProgressView(value: state.downloadProgress)
+                                Text("\(Int(state.downloadProgress * 100))%")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 38, alignment: .trailing)
+                            }
+                            Text("Загрузка \(ModelProfile.byId(state.settings.modelId).displayName)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                                .frame(width: 32)
                         }
                     } else if state.isModelInstalled {
                         HStack(spacing: 6) {
@@ -91,6 +97,7 @@ struct SettingsView: View {
                         }
                     } else {
                         Button("Скачать") { Task { await state.ensureModel() } }
+                            .disabled(state.isDownloadingModel)
                     }
                 }
             }

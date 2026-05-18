@@ -64,10 +64,10 @@ struct ModelProfile: Identifiable, Codable, Hashable {
         .init(id: "tiny",   displayName: "Быстрая",        fileName: "ggml-tiny.bin",
               url: URL(string: "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin")!,
               approxBytes: 78   * 1024 * 1024),
-        .init(id: "base",   displayName: "Сбалансированная", fileName: "ggml-base.bin",
+        .init(id: "base",   displayName: "Базовая", fileName: "ggml-base.bin",
               url: URL(string: "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin")!,
               approxBytes: 148  * 1024 * 1024),
-        .init(id: "small",  displayName: "Точная",          fileName: "ggml-small.bin",
+        .init(id: "small",  displayName: "Рекомендуемая",          fileName: "ggml-small.bin",
               url: URL(string: "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin")!,
               approxBytes: 488  * 1024 * 1024),
         .init(id: "medium", displayName: "Тяжёлая",         fileName: "ggml-medium.bin",
@@ -97,7 +97,7 @@ enum InsertMethod: String, Codable, CaseIterable, Identifiable {
 // MARK: - AppSettings
 
 struct AppSettings: Codable {
-    var modelId              = "base"
+    var modelId              = "small"
     var language             = "ru"
     var hotkey               = HotkeyConfig()
     var insertMethod         = InsertMethod.auto

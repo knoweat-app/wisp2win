@@ -13,10 +13,11 @@ The apps do not require Python, Homebrew-style tooling, or a manually installed 
 
 ## Current Status
 
-Release `v0.3.1` publishes both Windows and macOS artifacts:
+Release `v0.3.2` publishes both Windows and macOS artifacts:
 
-- `Wisp2Win-Setup-v0.3.1-win-x64.exe`
-- `Wisp2Mac-v0.3.1-macos-universal.zip`
+- `Wisp2Win-Setup-v0.3.2-win-x64.exe`
+- `Wisp2Mac-v0.3.2-macos-universal.zip`
+- `Wisp2Mac-v0.3.2-macos-universal.tar.gz`
 
 Windows:
 
@@ -90,7 +91,7 @@ macOS models are stored under:
 ~/Library/Application Support/Wisp2Win/Models
 ```
 
-The default model is `base`, which is a practical starting point for dictation. Users can switch to `small` or `medium` for better quality at the cost of download size and CPU time.
+The default model is `small`, which gives noticeably better Russian dictation quality than `base` at the cost of a larger first download. Users can switch to `tiny` or `base` for faster setup, or `medium` for higher quality with more CPU and disk usage.
 
 ## Roadmap
 

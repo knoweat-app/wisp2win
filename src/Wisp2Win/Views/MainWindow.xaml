@@ -106,7 +106,7 @@
 
                 <StackPanel Grid.Row="4" Grid.Column="1" Grid.RowSpan="3" Margin="12,0,0,0">
                     <DockPanel>
-                        <TextBlock Text="Модель" Foreground="{StaticResource MutedTextBrush}" />
+                        <TextBlock Text="Статус модели" Foreground="{StaticResource MutedTextBrush}" />
 
                         <!--  Installed badge  -->
                         <StackPanel DockPanel.Dock="Right"

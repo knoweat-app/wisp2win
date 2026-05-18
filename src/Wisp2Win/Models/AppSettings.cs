@@ -2,7 +2,7 @@ namespace Wisp2Win.Models;
 
 public sealed class AppSettings
 {
-    public string ModelId { get; set; } = "base";
+    public string ModelId { get; set; } = "small";
     public string Language { get; set; } = "ru";
     public string Hotkey { get; set; } = "Oem5";
     public string PasteShortcut { get; set; } = "auto";

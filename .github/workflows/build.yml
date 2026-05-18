@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 env:
-  WISP_VERSION: 0.3.1
+  WISP_VERSION: 0.3.2
 
 jobs:
   windows:
@@ -44,7 +44,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view v${env:WISP_VERSION} --repo knoweat-app/wisp2win `
-            || gh release create v${env:WISP_VERSION} --repo knoweat-app/wisp2win --title "Wisp2Win v${env:WISP_VERSION}" --notes "Bundle macOS Whisper runtime into the native app package."
+            || gh release create v${env:WISP_VERSION} --repo knoweat-app/wisp2win --title "Wisp2Win v${env:WISP_VERSION}" --notes "Show model download progress and use the recommended model by default."
       - name: Upload installer to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
@@ -62,16 +62,18 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Wisp2Mac
-          path: macos/output/Wisp2Mac-v${{ env.WISP_VERSION }}-macos-universal.zip
+          path: |
+            macos/output/Wisp2Mac-v${{ env.WISP_VERSION }}-macos-universal.zip
+            macos/output/Wisp2Mac-v${{ env.WISP_VERSION }}-macos-universal.tar.gz
       - name: Ensure release exists
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view v${WISP_VERSION} --repo knoweat-app/wisp2win \
-            || gh release create v${WISP_VERSION} --repo knoweat-app/wisp2win --title "Wisp2Win v${WISP_VERSION}" --notes "Bundle macOS Whisper runtime into the native app package."
+            || gh release create v${WISP_VERSION} --repo knoweat-app/wisp2win --title "Wisp2Win v${WISP_VERSION}" --notes "Show model download progress and use the recommended model by default."
       - name: Upload macOS app to release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v${WISP_VERSION} macos/output/Wisp2Mac-v${WISP_VERSION}-macos-universal.zip --repo knoweat-app/wisp2win --clobber
+        run: gh release upload v${WISP_VERSION} macos/output/Wisp2Mac-v${WISP_VERSION}-macos-universal.zip macos/output/Wisp2Mac-v${WISP_VERSION}-macos-universal.tar.gz --repo knoweat-app/wisp2win --clobber

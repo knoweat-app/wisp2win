@@ -7,6 +7,7 @@ final class AppState: ObservableObject {
     @Published var status = "Готово"
     @Published var isRecording = false
     @Published var isBusy = false
+    @Published var isDownloadingModel = false
     @Published var downloadProgress = 0.0
     @Published var lastTranscript = ""
     @Published var isModelInstalled = false
@@ -38,19 +39,32 @@ final class AppState: ObservableObject {
     }
 
     func ensureModel() async {
-        let model = ModelProfile.byId(settings.modelId)
-        if modelManager.isInstalled(model) {
-            downloadProgress = 1
+        if isDownloadingModel {
             return
         }
 
+        let model = ModelProfile.byId(settings.modelId)
+        if modelManager.isInstalled(model) {
+            downloadProgress = 1
+            isModelInstalled = true
+            return
+        }
+
+        isDownloadingModel = true
+        downloadProgress = 0
         status = "Загрузка модели \(model.displayName)"
+        defer {
+            isDownloadingModel = false
+        }
+
         do {
             try await modelManager.ensureInstalled(model) { progress in
                 Task { @MainActor in
-                    self.downloadProgress = progress
+                    self.downloadProgress = min(max(progress, 0), 1)
                 }
             }
+            downloadProgress = 1
+            refreshModelInstalled()
             status = "Готово"
         } catch {
             status = error.localizedDescription

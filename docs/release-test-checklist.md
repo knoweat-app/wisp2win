@@ -18,6 +18,7 @@ Use this checklist before promoting a Wisp2Win/Wisp2Mac release as the current r
 ## macOS
 
 - Download the latest `Wisp2Mac-vX.Y.Z-macos-universal.zip` from GitHub Releases.
+- If Archive Utility cannot expand the zip, test `Wisp2Mac-vX.Y.Z-macos-universal.tar.gz`.
 - Extract and move `Wisp2Mac.app` to `/Applications`.
 - Launch the app on macOS 13+.
 - If Gatekeeper blocks the first launch, use System Settings or the context menu flow to allow opening.
@@ -35,5 +36,5 @@ Use this checklist before promoting a Wisp2Win/Wisp2Mac release as the current r
 
 - Confirm `.github/workflows/build.yml`, `src/Wisp2Win/Wisp2Win.csproj`, `installer/wisp2win.iss`, and `macos/package_app.sh` all use the intended version.
 - Confirm the latest GitHub Actions run on `main` is green.
-- Confirm the GitHub release contains both Windows and macOS assets.
+- Confirm the GitHub release contains the Windows installer plus macOS zip and tar.gz assets.
 - Confirm README release notes match the published artifacts.

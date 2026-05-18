@@ -8,7 +8,7 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 APP_BIN="$MACOS_DIR/Wisp2Mac"
-VERSION="${WISP_VERSION:-0.3.1}"
+VERSION="${WISP_VERSION:-0.3.2}"
 
 find_swift_binary() {
   local arch="$1"
@@ -93,3 +93,4 @@ PLIST
 codesign --force --deep --sign - "$APP_DIR"
 
 ditto -c -k --sequesterRsrc --keepParent "$APP_DIR" "$ROOT_DIR/macos/output/Wisp2Mac-v$VERSION-macos-universal.zip"
+tar -C "$ROOT_DIR/macos/output" -czf "$ROOT_DIR/macos/output/Wisp2Mac-v$VERSION-macos-universal.tar.gz" "Wisp2Mac.app"

@@ -1,5 +1,5 @@
 #define MyAppName "Wisp2Win"
-#define MyAppVersion "0.3.1"
+#define MyAppVersion "0.3.2"
 #define MyAppPublisher "knoweat-app"
 #define MyAppExeName "Wisp2Win.exe"
 
