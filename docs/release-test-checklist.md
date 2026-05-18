@@ -7,6 +7,7 @@ Use this checklist before promoting a Wisp2Win/Wisp2Mac release as the current r
 - Download the latest `Wisp2Win-Setup-vX.Y.Z-win-x64.exe` from GitHub Releases.
 - Install on Windows 10/11 x64 without a local development checkout.
 - Launch from the Start menu.
+- Download `Wisp2Win-Portable-vX.Y.Z-win-x64.zip`, extract it into a user-writable folder, and launch `Wisp2Win.exe` without running the installer.
 - Confirm the tray icon appears.
 - Confirm the selected model downloads into `%LOCALAPPDATA%\Wisp2Win\Models`.
 - Start and stop dictation with the configured global hotkey.
@@ -36,5 +37,5 @@ Use this checklist before promoting a Wisp2Win/Wisp2Mac release as the current r
 
 - Confirm `.github/workflows/build.yml`, `src/Wisp2Win/Wisp2Win.csproj`, `installer/wisp2win.iss`, and `macos/package_app.sh` all use the intended version.
 - Confirm the latest GitHub Actions run on `main` is green.
-- Confirm the GitHub release contains the Windows installer plus macOS zip and tar.gz assets.
+- Confirm the GitHub release contains the Windows installer, Windows portable zip, macOS zip, and macOS tar.gz assets.
 - Confirm README release notes match the published artifacts.

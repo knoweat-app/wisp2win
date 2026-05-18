@@ -8,7 +8,7 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 APP_BIN="$MACOS_DIR/Wisp2Mac"
-VERSION="${WISP_VERSION:-0.3.2}"
+VERSION="${WISP_VERSION:-0.3.3}"
 
 find_swift_binary() {
   local arch="$1"

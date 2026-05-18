@@ -13,11 +13,12 @@ The apps do not require Python, Homebrew-style tooling, or a manually installed 
 
 ## Current Status
 
-Release `v0.3.2` publishes both Windows and macOS artifacts:
+Release `v0.3.3` publishes Windows and macOS artifacts:
 
-- `Wisp2Win-Setup-v0.3.2-win-x64.exe`
-- `Wisp2Mac-v0.3.2-macos-universal.zip`
-- `Wisp2Mac-v0.3.2-macos-universal.tar.gz`
+- `Wisp2Win-Setup-v0.3.3-win-x64.exe`
+- `Wisp2Win-Portable-v0.3.3-win-x64.zip`
+- `Wisp2Mac-v0.3.3-macos-universal.zip`
+- `Wisp2Mac-v0.3.3-macos-universal.tar.gz`
 
 Windows:
 
