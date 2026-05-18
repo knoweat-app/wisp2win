@@ -1,19 +1,24 @@
 # Wisp2Win
 
-Native Windows dictation powered by local Whisper models.
+Native local dictation for Windows and macOS, powered by Whisper models.
 
-Wisp2Win is a Windows-native version of the macOS dictation workflow:
+Wisp2Win started as a Windows-native version of the macOS dictation workflow and now ships both platform apps from one repository:
 
-1. Press the global hotkey (`\` by default).
+1. Press the global hotkey.
 2. Dictate.
 3. Press the hotkey again.
 4. The transcript is pasted into the active application.
 
-The app does not require Python, Homebrew-style tooling, or a manually installed Whisper binary. On first launch it downloads the selected Whisper model into `%LOCALAPPDATA%\Wisp2Win\Models`.
+The apps do not require Python, Homebrew-style tooling, or a manually installed Whisper binary. On first launch they download the selected Whisper model into the platform model directory.
 
 ## Current Status
 
-This is an initial Windows scaffold:
+Release `v0.3.1` publishes both Windows and macOS artifacts:
+
+- `Wisp2Win-Setup-v0.3.1-win-x64.exe`
+- `Wisp2Mac-v0.3.1-macos-universal.zip`
+
+Windows:
 
 - WPF desktop app targeting `net8.0-windows`.
 - Tray icon with quick actions.
@@ -25,9 +30,19 @@ This is an initial Windows scaffold:
 - Direct text typing fallback for apps that reject clipboard paste.
 - Optional offline transcript polishing for punctuation and sentence casing.
 
+macOS:
+
+- Native Swift/SwiftUI menu bar app.
+- Configurable global hotkey.
+- Microphone recording and local transcription through bundled `whisper-cli`.
+- Model auto-download with install status in the UI.
+- Clipboard paste and direct text typing modes.
+- Recording overlay, logs, and settings window.
+- Ad-hoc codesigned app bundle so Gatekeeper can show "Open Anyway".
+
 ## Build
 
-Requirements:
+Windows requirements:
 
 - Windows 10/11 x64
 - .NET 8 SDK
@@ -43,25 +58,36 @@ Publish a self-contained executable folder:
 dotnet publish .\src\Wisp2Win\Wisp2Win.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-Build the macOS prototype on macOS 13+:
+macOS requirements:
+
+- macOS 13+
+- Xcode command line tools
+
+Build the macOS app bundle:
 
 ```bash
 ./macos/build_whisper.sh
 ./macos/package_app.sh
 ```
 
-The macOS bundle includes its own Whisper runtime under `Contents/Resources/whisper` so end users install only one app. The build script currently pins `whisper.cpp` to `v1.7.6` for reproducible CI builds.
+The macOS bundle includes its own Whisper runtime under `Contents/Resources/whisper` so end users install only one app. The build script currently pins `whisper.cpp` to `v1.7.6` for reproducible CI builds. Full Developer ID signing and notarization are still future work.
 
 ## Installer
 
-The `installer/wisp2win.iss` script is intended for Inno Setup. Build the app first, then compile the installer script on Windows.
+The `installer/wisp2win.iss` script is intended for Inno Setup. GitHub Actions builds the Windows installer and uploads it to the matching GitHub release.
 
 ## Model Storage
 
-Models are stored under:
+Windows models are stored under:
 
 ```text
 %LOCALAPPDATA%\Wisp2Win\Models
+```
+
+macOS models are stored under:
+
+```text
+~/Library/Application Support/Wisp2Win/Models
 ```
 
 The default model is `base`, which is a practical starting point for dictation. Users can switch to `small` or `medium` for better quality at the cost of download size and CPU time.
@@ -72,4 +98,5 @@ The default model is `base`, which is a practical starting point for dictation. 
 - Real-time recording level HUD.
 - Model checksum verification.
 - Signed installer and auto-update channel.
-- macOS native app; see `docs/macos-plan.md`.
+- Developer ID signed and notarized macOS DMG.
+- Shared `Wisp2Core` for common model metadata and transcript polishing.
